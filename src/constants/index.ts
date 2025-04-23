@@ -1,3 +1,6 @@
+import sowsInTheWorld from '@/assets/lottie/sows-in-the-world.json'
+import worldRaisedHands from '@/assets/lottie/world-raised-hands.json'
+
 import { Category, Professional } from '../models'
 
 export const categories: Category[] = [
@@ -191,3 +194,8 @@ export const professionals: Professional[] = [
 			'Fabricamos muebles a medida con maderas certificadas y diseños personalizados para hogares y oficinas.'
 	}
 ]
+
+export const ANIMATIONS = {
+	'world-raised-hands': worldRaisedHands,
+	'sows-in-the-world': sowsInTheWorld
+}

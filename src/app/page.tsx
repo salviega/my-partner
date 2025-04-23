@@ -2,9 +2,10 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { Player } from '@lottiefiles/react-lottie-player'
 import { JSX, useState } from 'react'
 
-import { categories, professionals } from '@/constants'
+import { ANIMATIONS, categories, professionals } from '@/constants'
 import { Category, Professional } from '@/models'
 import Spinner from '@/shared/Spinner'
 
@@ -46,12 +47,12 @@ export default function Home(): JSX.Element {
 						</p>
 					</header>
 
-					{/* Body */}
+					{/* Container */}
 					<div className="grid gap-6 md:grid-cols-2">
-						{/* Categories */}
+						{/* Left Side */}
 						<div>
-							{/* categories */}
-							<div className="flex flex-col space-y-1 h-96 overflow-y-auto">
+							{/* Categories */}
+							<div className="flex flex-col space-y-1 max-h-96 overflow-y-auto">
 								{categories.map((category: Category, index: number) => (
 									<button
 										key={index}
@@ -77,13 +78,30 @@ export default function Home(): JSX.Element {
 							</div>
 						</div>
 
-						<div className="min-h-96">
+						{/* Right Side */}
+						<div className="flex justify-center items-center min-h-96">
+							{/* GIF*/}
+							{!selectedCategory && !isFindingPartners && (
+								<div className="flex justify-center items-center p-3 max-w-max">
+									<Player
+										autoplay
+										loop
+										src={ANIMATIONS['sows-in-the-world']}
+										style={{
+											height: '400px',
+											width: '400px'
+										}}
+									/>
+								</div>
+							)}
+
 							{/* Spinner */}
 							{isFindingPartners && (
-								<div className="flex items-center justify-center h-full bg-gray-500">
+								<div className="flex mx-auto bg-gray-500">
 									<Spinner />
 								</div>
 							)}
+
 							{/*  Partners */}
 							{selectedCategory && !isFindingPartners && (
 								<div className="flex flex-col space-y-1 h-96 overflow-y-auto">
