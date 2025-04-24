@@ -19,6 +19,18 @@ export const metadata: Metadata = {
 	description: 'Call your trusted partner'
 }
 
+declare global {
+	interface Window {
+		ethereum?: {
+			isMiniPay?: boolean
+			request: (args: {
+				method: string
+				params?: unknown[]
+			}) => Promise<unknown>
+		}
+	}
+}
+
 type Props = {
 	children: React.ReactNode
 }
