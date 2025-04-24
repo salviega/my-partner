@@ -1,7 +1,8 @@
+import { Subrubro } from '@/app/Home/componets/Subrubros'
 import sowsInTheWorld from '@/assets/lottie/sows-in-the-world.json'
 import worldRaisedHands from '@/assets/lottie/world-raised-hands.json'
 
-import { Category, Professional } from '../models'
+import { Category, Opinion, Professional } from '../models'
 
 export const categories: Category[] = [
 	{
@@ -192,6 +193,157 @@ export const professionals: Professional[] = [
 		stars: 5,
 		description:
 			'Fabricamos muebles a medida con maderas certificadas y diseños personalizados para hogares y oficinas.'
+	}
+]
+
+export const opinions: Opinion[] = [
+	{
+		id: 1,
+		author: 'Walter H.',
+		date: '2025-04-15',
+		stars: 5,
+		comment:
+			'Muy profesional, conoce su labor, tiene bastante detalle en su trabajo. Me cotizó un comedor. Excelente.',
+		avatar:
+			'https://lh3.googleusercontent.com/a/ACg8ocJ6b2eSfGBTXWv8ZJr0iTzgQdW72ESTkZCNtOHK6wCUzwbV_dwbKg=s96-c',
+		verified: true
+	},
+	{
+		id: 2,
+		author: 'Sandra P.',
+		date: '2025-03-22',
+		stars: 4,
+		comment:
+			'Cumplieron con el tiempo y presupuesto. El servicio eléctrico fue seguro y bien documentado.',
+		verified: true
+	},
+	{
+		id: 3,
+		author: 'Luis F.',
+		date: '2025-04-02',
+		stars: 5,
+		comment:
+			'Muebles impecables, excelente terminación. Volvería a contratarlos sin duda.',
+		avatar: 'https://dummyimage.com/96x96/ddd/aaa.jpg&text=L'
+	},
+	{
+		id: 4,
+		author: 'Valentina R.',
+		date: '2025-01-18',
+		stars: 3,
+		comment:
+			'Hubo una demora en la entrega, pero el trabajo final fue aceptable.',
+		verified: false
+	}
+]
+
+export const subrubros: Subrubro[] = [
+	{
+		title: 'Carpintero',
+		href: '/carpintero/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_carpintero.png',
+		items: [
+			'Aberturas de madera',
+			'Carpintería general',
+			'Machimbre',
+			'Muebles',
+			'Ebanistería',
+			'Aluminio'
+		]
+	},
+	{
+		title: 'Decorador',
+		href: '/decorador/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_decorador.png',
+		items: ['Tapicería', 'Decoración general', 'Interiores']
+	},
+	{
+		title: 'Instalador',
+		href: '/instalador/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_instalador.png',
+		items: [
+			'Muebles de cocina',
+			'Cuadros',
+			'Armado de muebles',
+			'Cortinas',
+			'Instalaciones generales'
+		]
+	},
+	{
+		title: 'Electricista',
+		href: '/electricista/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_electricista_thumb.svg',
+		items: [
+			'Instalación domiciliaria',
+			'Tableros y breakers',
+			'Iluminación LED',
+			'Certificación RETIE'
+		]
+	},
+	{
+		title: 'Plomero',
+		href: '/plomero/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_plomero_thumb.svg',
+		items: [
+			'Destape y mantenimiento',
+			'Filtraciones',
+			'Cámaras de inspección',
+			'Redes sanitarias'
+		]
+	},
+	{
+		title: 'Jardinero',
+		href: '/jardinero/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_jardinero_thumb.svg',
+		items: [
+			'Podas',
+			'Diseño paisajístico',
+			'Sistemas de riego',
+			'Fertilización'
+		]
+	},
+	{
+		title: 'Pintor',
+		href: '/pintor/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_pintor_thumb.svg',
+		items: [
+			'Interiores y exteriores',
+			'Estuco y enchape',
+			'Sellado de humedad',
+			'Texturizados'
+		]
+	},
+	{
+		title: 'Gasista',
+		href: '/gas/bogota',
+		icon: 'https://test-timbrit.s3.amazonaws.com/41a8f4e6f8c80285d249e7aee5f8057afa5ff18d_thumb.svg',
+		items: [
+			'Instalaciones residenciales',
+			'Conversión de estufas',
+			'Mantenimiento preventivo'
+		]
+	},
+	{
+		title: 'Cerrajero',
+		href: '/cerrajero/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_cerrajero_thumb.svg',
+		items: [
+			'Apertura de puertas',
+			'Cambio de guardas',
+			'Copia de llaves',
+			'Cerraduras inteligentes'
+		]
+	},
+	{
+		title: 'Tapicero',
+		href: '/tapicero/bogota',
+		icon: 'https://s3.amazonaws.com/timbrit-produccion/icono_tapicero_thumb.svg',
+		items: [
+			'Restauración de muebles',
+			'Tapizado cuero/tela',
+			'Espumas y rellenos',
+			'Cortes a medida'
+		]
 	}
 ]
 
