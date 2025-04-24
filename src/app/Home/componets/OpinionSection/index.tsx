@@ -75,13 +75,15 @@ export default function OpinionsSection(props: Props): JSX.Element {
 
 				<div className="flex flex-col items-center space-y-6">
 					{/* Resumen */}
-					<div className="basis-1/2 flex justify-end items-start space-x-12">
+					<div className="flex space-x-6 w-full">
+						{/* Rating */}
 						<div className="flex flex-col items-center">
 							<p className="text-3xl font-bold">{average}/5</p>
 							<StarRow stars={Math.round(average)} />
 						</div>
 
-						<div className="basis-1/2">
+						{/* Distribution */}
+						<div className="w-full">
 							<ul className="space-y-1 text-sm">
 								{distribution.map((dist: number, index: number) => {
 									const starValue: number = 5 - index

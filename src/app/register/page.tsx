@@ -25,9 +25,6 @@ const schema = z.object({
 	categories: z
 		.array(z.string().min(1, 'Category cannot be empty'))
 		.min(1, 'Select at least one category'),
-	subCategories: z
-		.array(z.string().min(1, 'Subcategory cannot be empty'))
-		.min(1, 'Select at least one subcategory'),
 	photo: z
 		.any()
 		.refine(files => files?.length > 0, { message: 'You must upload a file' })
@@ -47,7 +44,7 @@ const schema = z.object({
 		)
 })
 
-type ContactForm = z.infer<typeof schema>
+type Form = z.infer<typeof schema>
 
 export default function Register(): JSX.Element {
 	const {
@@ -56,7 +53,7 @@ export default function Register(): JSX.Element {
 		setValue,
 		watch,
 		formState: { errors, isSubmitting }
-	} = useForm<ContactForm>({
+	} = useForm<Form>({
 		resolver: zodResolver(schema)
 	})
 
@@ -77,10 +74,13 @@ export default function Register(): JSX.Element {
 	const isSelected = (value: string): boolean =>
 		selectedCategories.includes(value)
 
-	const toggleCategory = (value: string): void => {
-		const updated = isSelected(value)
-			? selectedCategories.filter(c => c !== value)
-			: [...selectedCategories, value]
+	const toggleCategory = (selectedCategory: string): void => {
+		const updated: string[] = isSelected(selectedCategory)
+			? selectedCategories.filter(
+					(category: string) => category !== selectedCategory
+				)
+			: [...selectedCategories, selectedCategory]
+
 		setValue('categories', updated, { shouldValidate: true })
 	}
 
@@ -156,9 +156,15 @@ export default function Register(): JSX.Element {
 		setShowDropdown(false)
 	}
 
-	const onSubmit = async (data: ContactForm) => {
-		console.log(data)
-		// Puedes enviar la info a una API aquí
+	const onSubmit = async (data: Form): Promise<void> => {
+		try {
+			console.log(data)
+			// Puedes enviar la info a una API aquí
+		} catch (error) {
+			handleError(error)
+		} finally {
+			setIsLoading(false)
+		}
 	}
 
 	return (
@@ -317,15 +323,15 @@ export default function Register(): JSX.Element {
 								<button
 									type="button"
 									key={href}
-									onClick={() => toggleCategory(href)}
+									onClick={() => toggleCategory(title)}
 									className={`flex flex-col items-center gap-2 rounded-lg p-4 transition hover:bg-orange-100 border-2 ${
-										isSelected(href)
+										isSelected(title)
 											? 'border-orange-500 bg-orange-50'
 											: 'border-transparent'
 									}`}
 								>
 									<Image src={img} alt={label} width={44} height={44} />
-									<span className="text-sm font-medium text-center">
+									<span className="text-sm font-medium text-center text-gray-500">
 										{label}
 									</span>
 								</button>
@@ -345,7 +351,7 @@ export default function Register(): JSX.Element {
 					className="btn bg-orange-500 text-white hover:bg-orange-600"
 					disabled={isSubmitting}
 				>
-					{isSubmitting ? 'Sending...' : 'Send Message'}
+					{isSubmitting ? 'Registering...' : 'Register'}
 				</button>
 			</form>
 		</div>
