@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { JSX } from 'react'
 
 import { Professional } from '@/models'
@@ -8,7 +9,7 @@ import StarRow from '../StartRow'
 
 type Props = {
 	professional: Professional
-	onBack: (value: boolean) => void
+	onBack?: (value: boolean) => void
 }
 
 export default function ProfessionalDetails(props: Props): JSX.Element {
@@ -30,23 +31,23 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 						<StarRow stars={professional.stars} />
 					</div>
 					<p className="text-gray-700">{professional.description}</p>
-					<button
-						onClick={() => onBack(false)}
-						className="btn max-w-max text-white bg-orange-500 hover:bg-orange-600"
-					>
-						Quote
-					</button>
+					<Link href={`request/${professional.id}`}>
+						<button className="btn max-w-max text-white bg-orange-500 hover:bg-orange-600">
+							Quote
+						</button>
+					</Link>
 				</div>
 			</div>
 
 			<OpinionsSection professionalName={professional.name} />
-
-			<button
-				onClick={() => onBack(false)}
-				className="btn text-white bg-orange-500  hover:bg-orange-600"
-			>
-				← Back
-			</button>
+			{onBack && (
+				<button
+					onClick={() => onBack(false)}
+					className="btn text-white bg-orange-500  hover:bg-orange-600"
+				>
+					← Back
+				</button>
+			)}
 		</div>
 	)
 }

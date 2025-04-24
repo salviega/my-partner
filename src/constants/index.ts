@@ -350,3 +350,17 @@ export const ANIMATIONS = {
 	'world-raised-hands': worldRaisedHands,
 	'sows-in-the-world': sowsInTheWorld
 }
+
+// Form constants
+
+export const NAME_MAX: number = 100
+export const WEBSITE_MAX: number = 100
+export const DESCRIPTION_MAX: number = 500
+export const PROGRAM_REQUIREMENTS_MAX: number = 100
+export const MAX_FILE_SIZE: number = 5 * 1024 * 1024 // 5 MB
+export const VALID_FILE_TYPES: string[] = [
+	'image/jpeg',
+	'image/png',
+	'image/gif',
+	'image/svg+xml'
+]
