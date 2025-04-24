@@ -31,7 +31,7 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 					</div>
 					<p className="text-gray-700">{professional.description}</p>
 					<button
-						onClick={() => onBack(false)} // volver a la lista
+						onClick={() => onBack(false)}
 						className="btn max-w-max text-white bg-orange-500 hover:bg-orange-600"
 					>
 						Quote
@@ -42,7 +42,7 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 			<OpinionsSection professionalName={professional.name} />
 
 			<button
-				onClick={() => onBack(false)} // volver a la lista
+				onClick={() => onBack(false)}
 				className="btn text-white bg-orange-500  hover:bg-orange-600"
 			>
 				← Back

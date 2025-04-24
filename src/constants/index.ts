@@ -1,8 +1,7 @@
-import { Subrubro } from '@/app/Home/componets/Subrubros'
 import sowsInTheWorld from '@/assets/lottie/sows-in-the-world.json'
 import worldRaisedHands from '@/assets/lottie/world-raised-hands.json'
 
-import { Category, Opinion, Professional } from '../models'
+import { Category, Opinion, Professional, Subrubro } from '../models'
 
 export const categories: Category[] = [
 	{
@@ -203,7 +202,7 @@ export const opinions: Opinion[] = [
 		date: '2025-04-15',
 		stars: 5,
 		comment:
-			'Muy profesional, conoce su labor, tiene bastante detalle en su trabajo. Me cotizó un comedor. Excelente.',
+			'Very professional, knows his craft, and pays great attention to detail. He quoted me for a dining set. Excellent.',
 		avatar:
 			'https://lh3.googleusercontent.com/a/ACg8ocJ6b2eSfGBTXWv8ZJr0iTzgQdW72ESTkZCNtOHK6wCUzwbV_dwbKg=s96-c',
 		verified: true
@@ -214,7 +213,7 @@ export const opinions: Opinion[] = [
 		date: '2025-03-22',
 		stars: 4,
 		comment:
-			'Cumplieron con el tiempo y presupuesto. El servicio eléctrico fue seguro y bien documentado.',
+			'They delivered on time and within budget. The electrical service was safe and well documented.',
 		verified: true
 	},
 	{
@@ -223,7 +222,7 @@ export const opinions: Opinion[] = [
 		date: '2025-04-02',
 		stars: 5,
 		comment:
-			'Muebles impecables, excelente terminación. Volvería a contratarlos sin duda.',
+			'Impeccable furniture, excellent finish. I would definitely hire them again.',
 		avatar: 'https://dummyimage.com/96x96/ddd/aaa.jpg&text=L'
 	},
 	{
@@ -232,7 +231,7 @@ export const opinions: Opinion[] = [
 		date: '2025-01-18',
 		stars: 3,
 		comment:
-			'Hubo una demora en la entrega, pero el trabajo final fue aceptable.',
+			'There was a delay in delivery, but the final work was acceptable.',
 		verified: false
 	}
 ]

@@ -13,7 +13,7 @@ export interface Professional {
 	description: string
 }
 
-export type ProDetailsExtra = {
+export interface ProDetailsExtra {
 	role: string
 	yearsInMarket: number
 	coverageKm: number
@@ -28,7 +28,7 @@ export type ProDetailsExtra = {
 	}[]
 }
 
-export type Opinion = {
+export interface Opinion {
 	id: number
 	author: string
 	date: string // ISO o string legible
@@ -36,4 +36,11 @@ export type Opinion = {
 	comment: string
 	avatar?: string // URL opcional
 	verified?: boolean
+}
+
+export type Subrubro = {
+	title: string
+	href: string
+	icon: string
+	items: string[]
 }

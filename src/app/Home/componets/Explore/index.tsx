@@ -13,12 +13,15 @@ import ProfessionalDetails from '../ProfesionalDetails'
 import StarRow from '../StartRow'
 
 export default function Explore(): JSX.Element {
+	const [flipped, setFlipped] = useState<boolean>(false)
 	const [isFindingPartners, setIsFindingPartners] = useState<boolean>(false)
+
 	const [selectedCategory, setSelectedCategory] = useState<Category | null>(
 		null
 	)
-	const [selectedPro, setSelectedPro] = useState<Professional | null>(null)
-	const [flipped, setFlipped] = useState<boolean>(false)
+
+	const [selectedProfessional, setSelectedProfessional] =
+		useState<Professional | null>(null)
 
 	const handleSelectCategory = (category: Category): void => {
 		setIsFindingPartners(true)
@@ -38,7 +41,7 @@ export default function Explore(): JSX.Element {
 						<p className="text-xl text-orange-500 font-semibold">
 							👷 What service do you need?
 						</p>
-						<p className="text-sm text-gray-600">
+						<p className="mb-1 text-sm text-gray-600">
 							Choose a category to find the best professionals in your area.
 						</p>
 					</header>
@@ -55,11 +58,11 @@ export default function Explore(): JSX.Element {
 										type="button"
 										onClick={() => handleSelectCategory(category)}
 										className={`btn btn-ghost flex w-full items-center justify-start space-x-3 py-12 text-sm hover:bg-gray-600 transition
-            ${
-							selectedCategory?.title === category.title
-								? 'bg-orange-500 text-white hover:bg-orange-600'
-								: 'bg-gray-500'
-						}`}
+                    ${
+											selectedCategory?.title === category.title
+												? 'bg-orange-500 text-white hover:bg-orange-600'
+												: 'bg-gray-500'
+										}`}
 									>
 										<Image
 											src={category.img}
@@ -112,8 +115,8 @@ export default function Explore(): JSX.Element {
 													<button
 														className="flex items-center gap-3"
 														onClick={() => {
-															setSelectedPro(professional) // guarda el partner
-															setFlipped(true) // gira la carta
+															setSelectedProfessional(professional)
+															setFlipped(true)
 														}}
 													>
 														<div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
@@ -156,9 +159,9 @@ export default function Explore(): JSX.Element {
 
 				{/* Partner Details */}
 				<div key="back">
-					{selectedPro && (
+					{selectedProfessional && (
 						<ProfessionalDetails
-							professional={selectedPro}
+							professional={selectedProfessional}
 							onBack={() => setFlipped(false)}
 						/>
 					)}
