@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { JSX } from 'react'
 
+import Providers from '@/config/providers.config'
+
 import './globals.css'
 
 const geistSans = Geist({
@@ -41,7 +43,7 @@ export default function RootLayout(props: Props): JSX.Element {
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
-				{props.children}
+				<Providers>{props.children}</Providers>
 			</body>
 		</html>
 	)

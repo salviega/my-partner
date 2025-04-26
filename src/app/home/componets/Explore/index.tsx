@@ -83,14 +83,14 @@ export default function Explore(): JSX.Element {
 							{!selectedCategory && !isFindingPartners && (
 								<div className="flex justify-center items-center p-3 max-w-max">
 									{/* <Player
-										autoplay
-										loop
-										src={ANIMATIONS['sows-in-the-world']}
-										style={{
-											height: '400px',
-											width: '400px'
-										}}
-									/> */}
+											autoplay
+											loop
+											src={ANIMATIONS['sows-in-the-world']}
+											style={{
+												height: '400px',
+												width: '400px'
+											}}
+										/> */}
 								</div>
 							)}
 

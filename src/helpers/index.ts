@@ -12,6 +12,26 @@ export function ensureEnvVar(
 	return envVar
 }
 
+export async function fileToBase64(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader: FileReader = new FileReader()
+
+		reader.readAsDataURL(file)
+
+		reader.onload = (): void => {
+			if (typeof reader.result === 'string') {
+				resolve(reader.result)
+			} else {
+				reject(new Error('Failed to convert file to Base64'))
+			}
+		}
+
+		reader.onerror = (error: ProgressEvent<FileReader>): void => {
+			reject(error)
+		}
+	})
+}
+
 export function handleError(error: unknown): never {
 	if (axios.isAxiosError(error)) {
 		const message =

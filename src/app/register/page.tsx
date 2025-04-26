@@ -2,9 +2,11 @@
 
 import Image from 'next/image'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { debounce } from 'lodash'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import {
@@ -13,8 +15,13 @@ import {
 	MAX_FILE_SIZE,
 	VALID_FILE_TYPES
 } from '@/constants'
-import { handleError } from '@/helpers'
+import { fileToBase64, handleError } from '@/helpers'
+import { Professional } from '@/models'
+import { professionalsService } from '@/services/firebase/professionls'
+import { storageServices } from '@/services/firebase/storage'
 import { openWeatherService } from '@/services/open-weather/locations'
+import { showAlert } from '@/shared/Alert'
+import { useStore } from '@/store'
 
 const schema = z.object({
 	name: z.string().min(2, 'Name is required'),
@@ -61,9 +68,19 @@ export default function Register(): JSX.Element {
 	const watchPhoto = watch('photo') || null
 	const { getLocation } = openWeatherService()
 
+	// services
+	const { saveProfessional } = professionalsService()
+	const { uploadProfessionalPhoto } = storageServices()
+
+	const { mutateAsync, isPending, error } = useMutation({
+		mutationFn: (professional: Professional) => saveProfessional(professional)
+	})
+
+	// external hooks
+	const address = useStore(state => state.address)
+
 	// hooks
 	const [loading, setLoading] = useState<boolean>(false)
-	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [showDropdown, setShowDropdown] = useState<boolean>(false)
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
@@ -158,13 +175,41 @@ export default function Register(): JSX.Element {
 
 	const onSubmit = async (data: Form): Promise<void> => {
 		try {
-			console.log(data)
-			// Puedes enviar la info a una API aquí
+			const { photo, ...rest } = data
+
+			const professionalAddress: Address = address
+				? address
+				: (zeroAddress as Address)
+
+			const photoUrl: string = await fileToBase64(photo[0])
+
+			const professional: Professional = {
+				...rest,
+				address: professionalAddress,
+				photoUrl,
+				stars: 5,
+				opinions: []
+			}
+
+			await mutateAsync(professional)
+
+			showAlert({
+				message: 'Professional registered successfully',
+				type: 'success'
+			})
 		} catch (error) {
-			handleError(error)
-		} finally {
-			setIsLoading(false)
+			showAlert({
+				message: `Error registering professional: ${handleError(error)}`,
+				type: 'error'
+			})
 		}
+	}
+
+	if (error) {
+		showAlert({
+			message: `Error: ${handleError(error)}`,
+			type: 'error'
+		})
 	}
 
 	return (
@@ -202,7 +247,7 @@ export default function Register(): JSX.Element {
 									accept="image/*"
 									{...register('photo')}
 									className="hidden"
-									disabled={isLoading}
+									disabled={isPending || isSubmitting}
 								/>
 							</label>
 
@@ -229,6 +274,7 @@ export default function Register(): JSX.Element {
 									placeholder="Name"
 									{...register('name')}
 									className="input input-bordered w-full"
+									disabled={isPending || isSubmitting}
 								/>
 								{errors.name && (
 									<p className="text-red-500 text-sm">{errors.name.message}</p>
@@ -241,6 +287,7 @@ export default function Register(): JSX.Element {
 									placeholder="Last Name"
 									{...register('lastName')}
 									className="input input-bordered w-full"
+									disabled={isPending || isSubmitting}
 								/>
 								{errors.lastName && (
 									<p className="text-red-500 text-sm">
@@ -255,6 +302,7 @@ export default function Register(): JSX.Element {
 									placeholder="Email"
 									{...register('email')}
 									className="input input-bordered w-full"
+									disabled={isPending || isSubmitting}
 								/>
 								{errors.email && (
 									<p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -269,6 +317,7 @@ export default function Register(): JSX.Element {
 										onChange: handleLocationChange
 									})}
 									className="input input-bordered w-full"
+									disabled={isPending || isSubmitting}
 								/>
 								{errors.city && (
 									<p className="text-red-500 text-sm">{errors.city.message}</p>
@@ -299,6 +348,7 @@ export default function Register(): JSX.Element {
 									placeholder="Description"
 									{...register('description')}
 									className="textarea textarea-bordered w-full"
+									disabled={isPending || isSubmitting}
 								></textarea>
 								{errors.description && (
 									<p className="text-red-500 text-sm">
@@ -329,6 +379,7 @@ export default function Register(): JSX.Element {
 											? 'border-orange-500 bg-orange-50'
 											: 'border-transparent'
 									}`}
+									disabled={isPending}
 								>
 									<Image src={img} alt={label} width={44} height={44} />
 									<span className="text-sm font-medium text-center text-gray-500">
@@ -349,9 +400,9 @@ export default function Register(): JSX.Element {
 				<button
 					type="submit"
 					className="btn bg-orange-500 text-white hover:bg-orange-600"
-					disabled={isSubmitting}
+					disabled={isPending}
 				>
-					{isSubmitting ? 'Registering...' : 'Register'}
+					{isPending ? 'Registering...' : 'Register'}
 				</button>
 			</form>
 		</div>

@@ -1,3 +1,5 @@
+import { Address } from 'viem'
+
 export interface Category {
 	title: string
 	href: string
@@ -5,12 +7,25 @@ export interface Category {
 	img: string
 }
 
-export interface Professional {
+export interface Opinion {
 	id: number
+	author: string
+	date: string // ISO o string legible
+	comment: string
+	avatar?: string // URL opcional
+	verified?: boolean
+}
+
+export interface Professional {
+	address: Address
+	id?: number
 	name: string
+	photo?: File
+	photoUrl?: string
 	city: string
 	stars: number
 	description: string
+	opinions: Opinion[]
 }
 
 export interface ProDetailsExtra {
@@ -26,16 +41,6 @@ export interface ProDetailsExtra {
 		stars: number
 		comment: string
 	}[]
-}
-
-export interface Opinion {
-	id: number
-	author: string
-	date: string // ISO o string legible
-	stars: number // 1-5
-	comment: string
-	avatar?: string // URL opcional
-	verified?: boolean
 }
 
 export type Subrubro = {

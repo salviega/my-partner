@@ -5,7 +5,7 @@ import { Address } from 'viem'
 
 import { useStore } from '@/store'
 
-import Home from './Home/page'
+import Home from './home/page'
 
 export default function Root(): JSX.Element {
 	const setAddress = useStore(state => state.setAddress)
