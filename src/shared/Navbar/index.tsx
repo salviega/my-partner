@@ -1,7 +1,15 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { JSX } from 'react'
 
 export default function Navbar(): JSX.Element {
+	const pathname: string = usePathname()
+	const splitPath: string[] = pathname.split('/')
+
+	const isConsole: boolean = splitPath[1] === 'console'
+
 	return (
 		<div className="navbar bg-base-100 shadow-sm">
 			{/* Navbar start */}
@@ -29,7 +37,18 @@ export default function Navbar(): JSX.Element {
 						className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
 					>
 						<li>
-							<a className="text-sm hover:bg-base-200">Are you partner?</a>
+							{!isConsole && (
+								<Link href="/register">
+									<p className="text-sm hover:bg-base-200">Are you partner?</p>
+								</Link>
+							)}
+						</li>
+						<li>
+							{isConsole && (
+								<Link href="/console/chats">
+									<p className="text-sm hover:bg-base-200">Chats</p>
+								</Link>
+							)}
 						</li>
 					</ul>
 				</div>
@@ -42,9 +61,18 @@ export default function Navbar(): JSX.Element {
 			<div className="navbar-center hidden lg:flex">
 				<ul className="menu menu-horizontal px-1">
 					<li>
-						<Link href="/register">
-							<p className="text-sm hover:bg-base-200">Are you partner?</p>
-						</Link>
+						{!isConsole && (
+							<Link href="/register">
+								<p className="text-sm hover:bg-base-200">Are you partner?</p>
+							</Link>
+						)}
+					</li>
+					<li>
+						{isConsole && (
+							<Link href="/console/chats">
+								<p className="text-sm hover:bg-base-200">Chats</p>
+							</Link>
+						)}
 					</li>
 				</ul>
 			</div>
