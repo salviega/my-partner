@@ -3,8 +3,6 @@
 import { JSX, useEffect, useState } from 'react'
 import { Address } from 'viem'
 
-import Announcement from '@/shared/Announcement'
-import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
 
 import Home from './home/page'
@@ -42,15 +40,15 @@ export default function Root(): JSX.Element {
 	}, [isAddressSeted, setAddress])
 
 	// Still checking MiniPay
-	if (checkingMiniPay)
-		return (
-			<div className="flex justify-center items-center w-full h-screen">
-				<Spinner />
-			</div>
-		)
+	// if (checkingMiniPay)
+	// 	return (
+	// 		<div className="flex justify-center items-center w-full h-screen">
+	// 			<Spinner />
+	// 		</div>
+	// 	)
 
 	// Checked MiniPay, no address detected
-	if (!isAddressSeted || !currentAddress) return <Announcement />
+	// if (!isAddressSeted || !currentAddress) return <Announcement />
 
 	// Address detected
 	return <Home />

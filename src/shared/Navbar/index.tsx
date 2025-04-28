@@ -13,7 +13,7 @@ export default function Navbar(): JSX.Element {
 	return (
 		<div className="navbar bg-base-100 shadow-sm">
 			{/* Navbar start */}
-			<div className="navbar-start">
+			<div className="w-full sm:navbar-start">
 				{/* Responsive menu */}
 				<div className="dropdown">
 					<div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">

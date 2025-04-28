@@ -2,7 +2,7 @@ import { JSX } from 'react'
 
 export default function Footer(): JSX.Element {
 	return (
-		<footer className="footer sm:footer-horizontal bg-base-100 text-neutral-content items-center p-4">
+		<footer className="footer flex justify-between sm:footer-horizontal bg-base-100 items-center p-4 text-gray-600">
 			{/* Sección izquierda: Logo + texto */}
 			<aside className="flex flex-col items-start">
 				<p>Made with love ❤️</p>

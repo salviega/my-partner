@@ -32,11 +32,13 @@ export default function OpinionsSection(props: Props): JSX.Element {
 	}, [])
 
 	return (
-		<section className="space-y-6 w-full text-gray-600">
-			<h3 className="text-lg font-semibold">Opiniones de {professionalName}</h3>
-			<div className="flex justify-around items-start">
+		<section className="flex flex-col  space-y-6 w-full text-gray-600">
+			<h3 className="text-center text-lg font-semibold">
+				{professionalName}&#39;s opinions
+			</h3>
+			<div className="flex flex-col sm:flex-row sm:justify-around items-start space-y-12">
 				{/* Opinions */}
-				<div className="space-y-6">
+				<div className="h-64 sm:max-h-max overflow-y-auto space-y-6">
 					{opinions.map((opinion: Opinion) => (
 						<article key={opinion.id} className="space-y-3 border-b pb-4">
 							{/* avatar + autor + fecha + rating */}
@@ -73,8 +75,8 @@ export default function OpinionsSection(props: Props): JSX.Element {
 					))}
 				</div>
 
-				<div className="flex flex-col items-center space-y-6">
-					{/* Resumen */}
+				{/* Resumen */}
+				<div className="flex flex-col items-center space-y-6 w-full sm:max-w-min">
 					<div className="flex space-x-6 w-full">
 						{/* Rating */}
 						<div className="flex flex-col items-center">

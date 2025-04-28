@@ -19,7 +19,7 @@ export default function Layout(props: Props): JSX.Element {
 				{/* Navbar */}
 				<Navbar />
 				{/* Main */}
-				<main className="flex flex-1 flex-col items-center py-6 sm:p-12 w-full h-full">
+				<main className="flex flex-1 flex-col items-center sm:p-12 sm:py-6 w-full h-full">
 					{children}
 					<Alert />
 				</main>
