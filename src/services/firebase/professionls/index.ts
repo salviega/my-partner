@@ -39,7 +39,7 @@ export function professionalsService(): {
 				querySnapshot.docs[0].data() as Professional
 			return professional
 		} catch (error) {
-			console.error('❌ Error fetching professional by wallet:', error)
+			console.error('❌ Error fetching professional:', error)
 			throw error
 		}
 	}

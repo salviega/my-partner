@@ -7,12 +7,18 @@ import { JSX } from 'react'
 
 import { IMAGES } from '@/constants'
 
-export default function Announcement(): JSX.Element {
+type Props = {
+	message?: string
+}
+
+export default function Announcement(props: Props): JSX.Element {
+	const { message } = props
+
 	return (
 		<div className="flex justify-center place-items-center w-full h-screen overflow-hidden">
 			<div className="flex flex-col justify-center items-center gap-12">
 				<div className="flex items-center space-x-3">
-					<p className="text-2xl">Only with</p>
+					<p className="text-2xl">{message ? message : 'Only with'}</p>
 					<Image
 						src={IMAGES['minipay-logo']}
 						alt="MiniPay"
