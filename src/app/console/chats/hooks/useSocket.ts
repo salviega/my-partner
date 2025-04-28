@@ -1,0 +1,49 @@
+import { useEffect, useState } from 'react'
+import { io, Socket } from 'socket.io-client'
+
+import { ChatMessage } from '../../chats/interfaces/chat'
+
+export function useChatSocket(
+	chatId: string,
+	currentUserId: string,
+	secondUserId: string
+) {
+	const [socket, setSocket] = useState<Socket | null>(null)
+	const [messages, setMessages] = useState<ChatMessage[]>([])
+
+	useEffect(() => {
+		if (!chatId || !currentUserId || !secondUserId) {
+			console.warn('Faltan datos para conectarse al chat.')
+			return
+		}
+
+		const socketInstance = io('http://localhost:3000', {
+			query: {
+				chatID: chatId,
+				userID: currentUserId,
+				secondIdUser: secondUserId
+			}
+		})
+
+		setSocket(socketInstance)
+
+		socketInstance.on('history', (history: ChatMessage[]) => {
+			setMessages(history)
+		})
+
+		socketInstance.on('receive_message', (message: ChatMessage) => {
+			setMessages(prev => [...prev, message])
+		})
+
+		return () => {
+			socketInstance.disconnect()
+		}
+	}, [chatId, currentUserId, secondUserId])
+
+	const sendMessage = (text: string) => {
+		if (text.trim() === '' || !socket) return
+		socket.emit('send_message', { text })
+	}
+
+	return { messages, sendMessage, socket }
+}
