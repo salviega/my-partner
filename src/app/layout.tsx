@@ -39,7 +39,7 @@ type Props = {
 
 export default function RootLayout(props: Props): JSX.Element {
 	return (
-		<html lang="en">
+		<html lang="en" data-theme="tema">
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
