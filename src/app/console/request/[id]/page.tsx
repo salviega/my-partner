@@ -25,6 +25,8 @@ import { showAlert } from '@/shared/Alert'
 import Layout from '@/shared/Layout'
 import { useStore } from '@/store'
 
+import ChatComponent from '../../chats/components/Chat'
+
 const schema = z.object({
 	name: z.string().min(2, 'Name is required'),
 	lastName: z.string().min(2, 'Last name is required'),
@@ -355,8 +357,23 @@ export default function Chat(): JSX.Element {
 						{isPending ? 'Registering...' : 'Request service'}
 					</button>
 				</form>
-				<div className="w-full h-full">
-					<p>Hello</p>
+				<div className="flex-1 h-full border-2 border-gray-200 bg-white p-6 rounded-lg shadow-md ml-4">
+					<h2 className="text-xl font-semibold text-orange-500 mb-4">
+						Chat with Professional
+					</h2>
+					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
+						{isPending ? (
+							<div className="flex justify-center items-center h-full">
+								<span className="loading loading-spinner loading-lg text-orange-500"></span>
+							</div>
+						) : (
+							<ChatComponent
+								chatId="1"
+								currentUserId="0x1234567890abcdef1234567890abcdef12345678"
+								secondUserId="0xabcdef1234567890abcdef1234567890abcdef12"
+							/>
+						)}
+					</div>
 				</div>
 			</div>
 		</Layout>
