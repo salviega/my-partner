@@ -26,6 +26,7 @@ import Layout from '@/shared/Layout'
 import { useStore } from '@/store'
 
 import ChatComponent from '../../chats/components/Chat'
+import { useChatSocket } from '../../chats/hooks/useSocket'
 
 const schema = z.object({
 	name: z.string().min(2, 'Name is required'),
@@ -243,6 +244,27 @@ export default function Chat(): JSX.Element {
 			}
 		]
 	}
+	const [paymentRequest, setPaymentRequest] = useState<{
+		amount: string
+		currency: string
+		requester: string
+	} | null>(null)
+	const { socket } = useChatSocket(
+		'1',
+		'0x1234567890abcdef1234567890abcdef12345678',
+		' 0xabcdef1234567890abcdef1234567890abcdef12'
+	)
+
+	useEffect(() => {
+		// Escuchar solicitudes de pago
+		socket?.on('payment_requested', data => {
+			setPaymentRequest(data)
+		})
+
+		return () => {
+			socket?.off('payment_requested')
+		}
+	}, [socket])
 
 	return (
 		<Layout>
@@ -367,11 +389,43 @@ export default function Chat(): JSX.Element {
 								<span className="loading loading-spinner loading-lg text-orange-500"></span>
 							</div>
 						) : (
-							<ChatComponent
-								chatId="1"
-								currentUserId="0x1234567890abcdef1234567890abcdef12345678"
-								secondUserId="0xabcdef1234567890abcdef1234567890abcdef12"
-							/>
+							<>
+								<ChatComponent
+									chatId="1"
+									currentUserId="0x1234567890abcdef1234567890abcdef12345678"
+									secondUserId="0xabcdef1234567890abcdef1234567890abcdef12"
+								/>
+								{paymentRequest && (
+									<div className="mt-4 bg-white p-4 rounded-2xl shadow-2xl border broder-gray-200">
+										<h2 className="text-lg font-semibold text-orange-500 mb-2">
+											Payment Request
+										</h2>
+										<p className="text-gray-700 mb-3">
+											<span className="font-medium">
+												{paymentRequest.requester}
+											</span>{' '}
+											is requesting a payment of{' '}
+											<span className="font-medium">
+												{paymentRequest.amount} {paymentRequest.currency}
+											</span>
+										</p>
+										<div className="flex justify-end gap-3">
+											<button
+												className="btn btn-sm border-gray-300 hover:bg-gray-100"
+												onClick={() => setPaymentRequest(null)}
+											>
+												Decline
+											</button>
+											<button
+												className="btn btn-sm bg-orange-500 text-white hover:bg-orange-600 border-none"
+												onClick={() => console.log('Payment accepted')}
+											>
+												Accept Payment
+											</button>
+										</div>
+									</div>
+								)}
+							</>
 						)}
 					</div>
 				</div>
