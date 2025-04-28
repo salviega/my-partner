@@ -1,32 +1,57 @@
 'use client'
 
-import { JSX, useEffect } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { Address } from 'viem'
 
+import Announcement from '@/shared/Announcement'
+import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
 
 import Home from './home/page'
 
 export default function Root(): JSX.Element {
+	const isAddressSeted = useStore(state => state.isAddressSeted)
 	const setAddress = useStore(state => state.setAddress)
+	const [checkingMiniPay, setCheckingMiniPay] = useState(true)
+	const [currentAddress, setCurrentAddress] = useState<Address | null>(null)
 
 	useEffect(() => {
-		if (window && window.ethereum) {
-			if (window.ethereum.isMiniPay) {
-				window.ethereum
-					.request({
-						method: 'eth_requestAccounts',
-						params: []
+		async function checkMiniPay(): Promise<void> {
+			if (typeof window !== 'undefined' && window.ethereum?.isMiniPay) {
+				try {
+					const accounts = await window.ethereum.request({
+						method: 'eth_requestAccounts'
 					})
-					.then(accounts => {
-						const accountList: Address[] = accounts as Address[]
-						setAddress(accountList[0])
-					})
-					.catch(error => {
-						console.error('Error requesting accounts:', error)
-					})
+
+					const accountList = accounts as Address[]
+					setCurrentAddress(accountList[0])
+					setAddress(accountList[0])
+				} catch (error) {
+					console.error('Error requesting accounts:', error)
+				}
 			}
+			setCheckingMiniPay(false)
 		}
-	}, [setAddress])
+
+		// Only check if address is not set yet
+		if (!isAddressSeted) {
+			checkMiniPay()
+		} else {
+			setCheckingMiniPay(false)
+		}
+	}, [isAddressSeted, setAddress])
+
+	// Still checking MiniPay
+	if (checkingMiniPay)
+		return (
+			<div className="flex justify-center items-center w-full h-screen">
+				<Spinner />
+			</div>
+		)
+
+	// Checked MiniPay, no address detected
+	if (!isAddressSeted || !currentAddress) return <Announcement />
+
+	// Address detected
 	return <Home />
 }

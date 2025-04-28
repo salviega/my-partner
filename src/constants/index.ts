@@ -1,6 +1,7 @@
 import sowsInTheWorld from '@/assets/lottie/sows-in-the-world.json'
 import worldRaisedHands from '@/assets/lottie/world-raised-hands.json'
 
+import minipayLogo from '../assets/images/minipay-logo.svg'
 import { Category, Opinion, Professional, Subrubro } from '../models'
 
 export const categories: Category[] = [
@@ -349,6 +350,10 @@ export const subrubros: Subrubro[] = [
 export const ANIMATIONS = {
 	'world-raised-hands': worldRaisedHands,
 	'sows-in-the-world': sowsInTheWorld
+}
+
+export const IMAGES = {
+	'minipay-logo': minipayLogo
 }
 
 // Form constants

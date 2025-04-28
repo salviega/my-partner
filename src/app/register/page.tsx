@@ -18,7 +18,6 @@ import {
 import { fileToBase64, handleError } from '@/helpers'
 import { Professional } from '@/models'
 import { professionalsService } from '@/services/firebase/professionls'
-import { storageServices } from '@/services/firebase/storage'
 import { openWeatherService } from '@/services/open-weather/locations'
 import { showAlert } from '@/shared/Alert'
 import { useStore } from '@/store'
@@ -70,7 +69,6 @@ export default function Register(): JSX.Element {
 
 	// services
 	const { saveProfessional } = professionalsService()
-	const { uploadProfessionalPhoto } = storageServices()
 
 	const { mutateAsync, isPending, error } = useMutation({
 		mutationFn: (professional: Professional) => saveProfessional(professional)
@@ -80,7 +78,6 @@ export default function Register(): JSX.Element {
 	const address = useStore(state => state.address)
 
 	// hooks
-	const [loading, setLoading] = useState<boolean>(false)
 	const [showDropdown, setShowDropdown] = useState<boolean>(false)
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
@@ -326,7 +323,7 @@ export default function Register(): JSX.Element {
 								{/* Dropdown debajo del input */}
 								{showDropdown && (
 									<ul className="absolute top-full mt-1 w-full bg-white border rounded-lg shadow z-10">
-										{loading && (
+										{isSubmitting && (
 											<li className="p-2 text-gray-500">Loading...</li>
 										)}
 										{suggestions.map((suggestion, index) => (
