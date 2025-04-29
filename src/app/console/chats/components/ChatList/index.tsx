@@ -55,36 +55,27 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 	}
 
 	return (
-		<div className="p-4 rounded-lg shadow-lg h-full">
+		<div className="p-4 lg:p-10 rounded-2xl shadow-lg h-full bg-white">
 			<h2 className="text-2xl font-bold mb-6">My Chat Clients</h2>
 			{chats.length === 0 ? (
-				<div className="alert alert-info">
-					<div>
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 24 24"
-							className="stroke-current shrink-0 w-6 h-6"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							></path>
-						</svg>
-						<span>No tienes chats activos.</span>
+				<div className="flex flex-col items-center justify-center py-8">
+					<div className="flex flex-col items-center text-center p-3">
+						<h3 className="font-bold text-lg">No Active Chats</h3>
+						<p className="text-sm opacity-80">
+							Your chat list is empty. Conversations will appear here when
+							clients connect with you.
+						</p>
 					</div>
 				</div>
 			) : (
-				<div className="grid gap-4">
+				<div className="space-y-4">
 					{chats.map(chat => {
 						const secondUserId = getSecondUserId(chat)
 						return (
 							<div
 								key={chat.id}
 								onClick={() => onSelectChat(chat.id, secondUserId)}
-								className="card bg-base-100 hover:bg-base-200 cursor-pointer transition-colors"
+								className=" bg-base-100 hover:bg-base-200 cursor-pointer transition-colors w-full rounded-2xl"
 							>
 								<div className="card-body p-3 sm:p-4">
 									<div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
@@ -97,7 +88,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 											/>
 										</div>
 										<div className="flex-1 min-w-0">
-											<h3 className="card-title text-base sm:text-lg truncate text-wrap">
+											<h3 className="card-title text-base sm:text-lg truncate w-full">
 												{secondUserId}
 											</h3>
 											<p className="text-xs sm:text-sm opacity-70 truncate">
@@ -105,10 +96,14 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 												{new Date(chat.updatedAt).toLocaleString()}
 											</p>
 										</div>
-										<div className="self-start sm:self-center mt-1 sm:mt-0">
+										<div className="">
 											<div
 												className={`badge ${chat.status === 'active' ? 'badge-primary' : 'badge-ghost'}`}
 											>
+												<div className="inline-grid *:[grid-area:1/1]">
+													<div className="status status-success animate-ping"></div>
+													<div className="status status-success"></div>
+												</div>
 												{chat.status}
 											</div>
 										</div>
