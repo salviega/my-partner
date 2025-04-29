@@ -17,13 +17,15 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 	const { professional: selectedProfessional, onBack } = props
 
 	// store
-	const setProfessional = useStore(state => state.setProfessional)
+	const setSelectedProfessional = useStore(
+		state => state.setSelectedProfessional
+	)
 
 	// hooks
 	const router = useRouter()
 
 	const quote = (): void => {
-		setProfessional(selectedProfessional)
+		setSelectedProfessional(selectedProfessional)
 		router.push(`/console/request/${selectedProfessional.id}`)
 	}
 
@@ -45,7 +47,7 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 				<div className="flex flex-col items-center space-y-3 w-full">
 					<div className="flex flex-col sm:flex-row items-center sm:space-x-3">
 						<h3 className="text-xl font-semibold">
-							{selectedProfessional.name}
+							{selectedProfessional.name} {selectedProfessional.lastName}
 						</h3>
 						<StarRow stars={selectedProfessional.stars} />
 					</div>

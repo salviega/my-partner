@@ -18,7 +18,7 @@ import {
 	VALID_FILE_TYPES
 } from '@/constants'
 import { fileToBase64, handleError } from '@/helpers'
-import { Professional } from '@/models'
+import { Professional, ProfessionalDto } from '@/models'
 import { professionalsService } from '@/services/firebase/professionls'
 import { openWeatherService } from '@/services/open-weather/locations'
 import Announcement from '@/shared/Announcement'
@@ -78,12 +78,15 @@ export default function Register(): JSX.Element {
 	const { saveProfessional } = professionalsService()
 
 	const { mutateAsync, isPending, error } = useMutation({
-		mutationFn: (professional: Professional) => saveProfessional(professional),
+		mutationFn: (professionalDto: ProfessionalDto) =>
+			saveProfessional(professionalDto),
+
 		onSuccess: (_data: Professional) => {
 			toast.success('Professional registered successfully')
 			router.push('/console/chats')
 			reset()
 		},
+
 		onError: (error: Error) => {
 			toast.error(`Error registering professional: ${handleError(error)}`)
 		}
@@ -91,19 +94,23 @@ export default function Register(): JSX.Element {
 
 	// store
 	const address = useStore(state => state.address)
-	const isAddressSeted = useStore(state => state.isAddressSeted)
-	const isProfessionalSeted = useStore(state => state.isProfessionalSeted)
+	const isSettingUser = useStore(state => state.isSettingUser)
+	const isSettingProfessional = useStore(state => state.isSettingProfessional)
 	const professional = useStore(state => state.professional)
-	const setAddress = useStore(state => state.setAddress)
-	const getProfessional = useStore(state => state.getProfessional)
+	const user = useStore(state => state.user)
+
+	const getProfessionalByAddress = useStore(
+		state => state.getProfessionalByAddress
+	)
+	const getUser = useStore(state => state.getUser)
 
 	// hooks
+	const router = useRouter()
 	const [currentAddress, setCurrentAddress] = useState<Address | null>(null)
 	const [checkingMiniPay, setCheckingMiniPay] = useState(true)
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 	const [suggestions, setSuggestions] = useState<string[]>([])
 	const [showDropdown, setShowDropdown] = useState<boolean>(false)
-	const router = useRouter()
 
 	// variables
 	const selectedCategories = watchCategories
@@ -114,29 +121,39 @@ export default function Register(): JSX.Element {
 	useEffect(() => {
 		async function checkMiniPay(): Promise<void> {
 			if (typeof window !== 'undefined' && window.ethereum?.isMiniPay) {
-				try {
-					const accounts = await window.ethereum.request({
-						method: 'eth_requestAccounts'
-					})
+				if (!user) {
+					try {
+						const accounts = await window.ethereum.request({
+							method: 'eth_requestAccounts'
+						})
 
-					const accountList = accounts as Address[]
-					setCurrentAddress(accountList[0])
-					setAddress(accountList[0])
-					getProfessional(accountList[0])
-				} catch (error) {
-					console.error('Error requesting accounts:', error)
+						const accountList = accounts as Address[]
+						getUser(accountList[0])
+						getProfessionalByAddress(zeroAddress)
+					} catch (error) {
+						console.error('Error requesting accounts:', error)
+					}
+				}
+
+				if (user && !professional) {
+					getProfessionalByAddress(user.address)
 				}
 			}
+
+			// Hardcoded address for testing
+			getUser(zeroAddress)
+			getProfessionalByAddress(zeroAddress)
+
 			setCheckingMiniPay(false)
 		}
 
 		// Only check if address is not set yet
-		if (!isAddressSeted) {
+		if (!user) {
 			checkMiniPay()
 		} else {
 			setCheckingMiniPay(false)
 		}
-	}, [isAddressSeted, getProfessional, setAddress])
+	}, [professional, user, getProfessionalByAddress, getUser])
 
 	useEffect(() => {
 		if (!watchPhoto || watchPhoto.length === 0) {
@@ -226,7 +243,7 @@ export default function Register(): JSX.Element {
 
 			const photoUrl: string = await fileToBase64(photo[0])
 
-			const professional: Professional = {
+			const professionalDto: ProfessionalDto = {
 				...rest,
 				address: professionalAddress,
 				photoUrl,
@@ -234,7 +251,7 @@ export default function Register(): JSX.Element {
 				opinions: []
 			}
 
-			mutateAsync(professional)
+			mutateAsync(professionalDto)
 		} catch (error) {
 			toast.error(`Error registering professional: ${handleError(error)}`)
 		}
@@ -245,16 +262,17 @@ export default function Register(): JSX.Element {
 	}
 
 	// Still checking MiniPay
-	if (checkingMiniPay && !isProfessionalSeted)
+	if (checkingMiniPay || isSettingUser || isSettingProfessional)
 		return (
 			<div className="flex justify-center items-center w-full h-screen">
 				<Spinner />
 			</div>
 		)
 
-	// Checked MiniPay, no address detected
-	// if (!isAddressSeted || !currentAddress)
-	// 	return <Announcement message="You are already registered" />
+	// if (!isSettingUser && !user) return <Announcement />
+
+	if (!isSettingProfessional && professional)
+		return <Announcement message="Already registered" />
 
 	// Professional detected
 	return (

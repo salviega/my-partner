@@ -1,8 +1,8 @@
 'use client'
 
 import Image from 'next/image'
+import { useParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 // crypto is not needed, we'll use window.crypto instead
 import { debounce } from 'lodash'
 import { JSX, useEffect, useState } from 'react'
@@ -11,18 +11,13 @@ import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
-import {
-	categories,
-	DESCRIPTION_MAX,
-	MAX_FILE_SIZE,
-	VALID_FILE_TYPES
-} from '@/constants'
+import { DESCRIPTION_MAX, MAX_FILE_SIZE, VALID_FILE_TYPES } from '@/constants'
 import { fileToBase64, handleError } from '@/helpers'
 import { Professional } from '@/models'
-import { professionalsService } from '@/services/firebase/professionls'
-import { storageServices } from '@/services/firebase/storage'
 import { openWeatherService } from '@/services/open-weather/locations'
+import Announcement from '@/shared/Announcement'
 import Layout from '@/shared/Layout'
+import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
 import { saveLocalStorage } from '@/utils/store.localstorage'
 
@@ -74,23 +69,31 @@ export default function Chat(): JSX.Element {
 	const watchPhoto = watch('photo') || null
 	const { getLocation } = openWeatherService()
 
-	// services
-	const { saveProfessional } = professionalsService()
-	const {
-		/* uploadProfessionalPhoto */
-	} = storageServices()
+	// store
 
-	const { mutateAsync, isPending, error } = useMutation({
-		mutationFn: (professional: Professional) => saveProfessional(professional)
-	})
+	const isSettingProfessional = useStore(state => state.isSettingProfessional)
 
-	// external hooks
-	const address = useStore(state => state.address)
+	const isSettingSelectedProfessional = useStore(
+		state => state.isSettingSelectedProfessional
+	)
+
+	const isSettingUser = useStore(state => state.isSettingUser)
+	const professional = useStore(state => state.professional)
+	const selectedProfessional = useStore(state => state.selectedProfessional)
+	const user = useStore(state => state.user)
+
+	const getUser = useStore(state => state.getUser)
+	const getProfessional = useStore(state => state.getProfessionalByAddress)
+	const getSelectedProfessionalById = useStore(
+		state => state.getSelectedProfessionalById
+	)
 
 	// hooks
+	const { id } = useParams()
 	const [_loading, setLoading] = useState<boolean>(false)
 	const [_showDropdown, setShowDropdown] = useState<boolean>(false)
 	const [_previewUrl, setPreviewUrl] = useState<string | null>(null)
+	const [checkingMiniPay, setCheckingMiniPay] = useState<boolean>(true)
 
 	const [_suggestions, setSuggestions] = useState<string[]>([])
 
@@ -108,6 +111,49 @@ export default function Chat(): JSX.Element {
 
 		setValue('categories', updated, { shouldValidate: true })
 	}
+
+	useEffect(() => {
+		async function checkMiniPay(): Promise<void> {
+			if (typeof window !== 'undefined' && window.ethereum?.isMiniPay) {
+				if (!user) {
+					try {
+						const accounts = await window.ethereum.request({
+							method: 'eth_requestAccounts'
+						})
+
+						const accountList = accounts as Address[]
+						getUser(accountList[0])
+						getProfessional(zeroAddress)
+					} catch (error) {
+						console.error('Error requesting accounts:', error)
+					}
+				}
+
+				if (user && !professional) {
+					getProfessional(user.address)
+				}
+			}
+
+			// Hardcoded address for testing
+			getUser(zeroAddress)
+			getProfessional(zeroAddress)
+
+			setCheckingMiniPay(false)
+		}
+
+		// Only check if address is not set yet
+		if (!user) {
+			checkMiniPay()
+		} else {
+			setCheckingMiniPay(false)
+		}
+	}, [professional, user, getProfessional, getUser])
+
+	useEffect(() => {
+		if (!selectedProfessional && id && typeof id === 'string') {
+			getSelectedProfessionalById(id)
+		}
+	}, [id, selectedProfessional, getSelectedProfessionalById])
 
 	useEffect(() => {
 		if (!watchPhoto || watchPhoto.length === 0) {
@@ -181,45 +227,6 @@ export default function Chat(): JSX.Element {
 		setShowDropdown(false)
 	}
 
-	if (error) {
-		showAlert({
-			message: `Error: ${handleError(error)}`,
-			type: 'error'
-		})
-	}
-
-	const professional: Professional = {
-		id: '1',
-		name: 'John Doe',
-		city: 'New York',
-		stars: 5,
-		description:
-			'Experienced professional offering top-quality services in the city.',
-		photoUrl: 'https://dummyimage.com/600x400/000/fff&text=John+Doe',
-		address: zeroAddress as Address,
-		opinions: [
-			{
-				id: 1,
-				author: 'Alice Smith',
-				date: '2025-04-25',
-				comment: 'Excellent service, very professional!',
-				avatar: 'https://dummyimage.com/80x80/ccc/000&text=A',
-				verified: true,
-				stars: 5
-			},
-			{
-				id: 2,
-				author: 'Bob Johnson',
-				date: '2025-04-20',
-				comment: 'Highly recommended.',
-				avatar: 'https://dummyimage.com/80x80/ccc/000&text=B',
-				verified: false,
-				stars: 4
-			}
-		],
-		lastName: '',
-		categories: []
-	}
 	const [requestChat, setRequestChat] = useState(false)
 	const [chatId, setChatId] = useState('')
 	const [paymentRequest, setPaymentRequest] = useState<{
@@ -252,6 +259,7 @@ export default function Chat(): JSX.Element {
 			setRequestChat(true)
 		}
 	}, [])
+
 	const _handleRequestChat = (): void => {
 		const uuid = crypto.randomUUID()
 		setChatId(uuid)
@@ -292,6 +300,23 @@ export default function Chat(): JSX.Element {
 		}
 	}
 
+	if (
+		checkingMiniPay ||
+		isSettingUser ||
+		isSettingProfessional ||
+		isSettingSelectedProfessional
+	)
+		return (
+			<div className="flex justify-center items-center w-full h-screen">
+				<Spinner />
+			</div>
+		)
+
+	// if (!isSettingUser && !user) return <Announcement />
+
+	if (!isSettingSelectedProfessional && !selectedProfessional)
+		return <Announcement message="My partner isn't already mine" />
+
 	return (
 		<Layout>
 			<div
@@ -302,28 +327,44 @@ export default function Chat(): JSX.Element {
 						// onSubmit={handleSubmit(onSubmit)}
 						className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md w-full h-full"
 					>
-						<h2 className="text-xl font-semibold text-orange-500">
-							Professional information
-						</h2>
-						<div className="flex items-center space-x-12 text-gray-300">
-							<Image
-								src={`https://dummyimage.com/120x120/eee/aaa.jpg&text=${professional.name.charAt(0).toUpperCase()}`}
-								alt={professional.name}
-								width={250}
-								height={250}
-								className="rounded-full object-cover"
-							/>
-							<div className="flex flex-col space-y-3 w-full">
-								<div className="flex items-center space-x-3">
-									<h3 className="text-xl font-semibold">{professional.name}</h3>
-									<StarRow stars={professional.stars} />
+						{/* Profesional info */}
+						{selectedProfessional && (
+							<div className="flex flex-col items-center space-y-4 w-full">
+								<h2 className="text-xl font-semibold text-orange-500">
+									Professional information
+								</h2>
+								<div className="flex items-center space-x-12 text-gray-300">
+									<Image
+										src={
+											selectedProfessional.photoUrl
+												? selectedProfessional.photoUrl
+												: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
+										}
+										alt={selectedProfessional.name}
+										width={250}
+										height={250}
+										className="rounded-full object-cover"
+									/>
+									<div className="flex flex-col space-y-3 w-full">
+										<div className="flex items-center space-x-3">
+											<h3 className="text-xl font-semibold">
+												{selectedProfessional.name}{' '}
+												{selectedProfessional.lastName}
+											</h3>
+											<StarRow stars={selectedProfessional.stars} />
+										</div>
+										<p className="text-gray-700">
+											{selectedProfessional.description}
+										</p>
+									</div>
 								</div>
-								<p className="text-gray-700">{professional.description}</p>
+								<h2 className="text-lg font-semibold text-orange-500">
+									About the project
+								</h2>
 							</div>
-						</div>
-						<h2 className="text-lg font-semibold text-orange-500">
-							About the project
-						</h2>
+						)}
+
+						{/* Form */}
 						<div className="flex flex-col items-center space-y-3">
 							<div className="flex justify-between items-center w-full">
 								{/* Name, Last Name, Email, City, Description */}
@@ -335,7 +376,7 @@ export default function Chat(): JSX.Element {
 											placeholder="Name"
 											{...register('name')}
 											className="input input-bordered w-full"
-											disabled={isPending || isSubmitting}
+											disabled={isSubmitting}
 										/>
 										{errors.name && (
 											<p className="text-red-500 text-sm">
@@ -351,7 +392,7 @@ export default function Chat(): JSX.Element {
 											placeholder="Description"
 											{...register('description')}
 											className="textarea textarea-bordered w-full"
-											disabled={isPending || isSubmitting}
+											disabled={isSubmitting}
 										></textarea>
 										{errors.description && (
 											<p className="text-red-500 text-sm">
@@ -371,26 +412,29 @@ export default function Chat(): JSX.Element {
 									Select Categories
 								</h2>
 
-								<div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-52 overflow-y-auto">
-									{categories.map(({ title, label, img, href }) => (
-										<button
-											type="button"
-											key={href}
-											onClick={() => toggleCategory(title)}
-											className={`flex flex-col items-center gap-2 rounded-lg p-4 transition hover:bg-orange-100 border-2 ${
-												isSelected(title)
-													? 'border-orange-500 bg-orange-50'
-													: 'border-transparent'
-											}`}
-											disabled={isPending}
-										>
-											<Image src={img} alt={label} width={44} height={44} />
-											<span className="text-sm font-medium text-center text-gray-500">
-												{label}
-											</span>
-										</button>
-									))}
-								</div>
+								{selectedProfessional && (
+									<div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-52 overflow-y-auto">
+										{selectedProfessional.categories.map(
+											({ title, label, img, href }) => (
+												<button
+													type="button"
+													key={href}
+													onClick={() => toggleCategory(title)}
+													className={`flex flex-col items-center gap-2 rounded-lg p-4 transition hover:bg-orange-100 border-2 ${
+														isSelected(title)
+															? 'border-orange-500 bg-orange-50'
+															: 'border-transparent'
+													}`}
+												>
+													<Image src={img} alt={label} width={44} height={44} />
+													<span className="text-sm font-medium text-center text-gray-500">
+														{label}
+													</span>
+												</button>
+											)
+										)}
+									</div>
+								)}
 
 								{errors.categories && (
 									<p className="text-red-500 text-sm">
@@ -403,10 +447,9 @@ export default function Chat(): JSX.Element {
 						<button
 							type="submit"
 							className="btn bg-orange-500 text-white hover:bg-orange-600"
-							disabled={isPending}
 							onClick={_handleRequestChat}
 						>
-							{isPending ? 'Registering...' : 'Request service'}
+							{isSubmitting ? 'Registering...' : 'Request service'}
 						</button>
 					</form>
 				)}
@@ -416,7 +459,7 @@ export default function Chat(): JSX.Element {
 						Chat with Professional
 					</h2>
 					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
-						{isPending ? (
+						{isSubmitting ? (
 							<div className="flex items-center justify-center h-full">
 								<span className="loading loading-spinner loading-lg text-orange-500"></span>
 							</div>

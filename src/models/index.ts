@@ -17,13 +17,26 @@ export interface Opinion {
 	stars: number
 }
 
-export interface Professional {
+export interface ProfessionalDto {
 	address: Address
-	id?: string
 	name: string
 	lastName: string
 	photo?: File
 	categories: string[]
+	photoUrl?: string
+	city: string
+	stars: number
+	description: string
+	opinions: Opinion[]
+}
+
+export interface Professional {
+	id?: string
+	address: Address
+	name: string
+	lastName: string
+	photo?: File
+	categories: Category[]
 	photoUrl?: string
 	city: string
 	stars: number
@@ -60,6 +73,12 @@ export interface RequestForm {
 	category: string
 	starDate: string
 }
+
+export interface User {
+	id?: string
+	address: Address
+}
+
 /*
   Hello profesional.name! 👋
   I want to quote you for a job I need done:

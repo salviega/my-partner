@@ -9,7 +9,8 @@ import {
 } from 'firebase/firestore'
 import { Address, checksumAddress } from 'viem'
 
-import { Professional } from '@/models'
+import { categories } from '@/constants'
+import { Category, Professional, ProfessionalDto } from '@/models'
 
 import { db } from '..'
 
@@ -19,7 +20,7 @@ export function professionalsService(): {
 	getProfessionalByAddress: (address: Address) => Promise<Professional | null>
 	getProfessionalsByCategory: (category: string) => Promise<Professional[]>
 	getProfessionalById: (id: string) => Promise<Professional | null>
-	saveProfessional: (user: Professional) => Promise<Professional>
+	saveProfessional: (user: ProfessionalDto) => Promise<Professional>
 } {
 	const getProfessionalByAddress = async (
 		address: Address
@@ -38,9 +39,14 @@ export function professionalsService(): {
 				return null
 			}
 
-			const professional: Professional =
-				querySnapshot.docs[0].data() as Professional
-			return professional
+			const professional: Professional = mapProfessionalDto(
+				querySnapshot.docs[0].data() as ProfessionalDto
+			)
+
+			return {
+				...professional,
+				id: querySnapshot.docs[0].id
+			}
 		} catch (error) {
 			console.error('❌ Error fetching professional:', error)
 			throw error
@@ -62,7 +68,7 @@ export function professionalsService(): {
 
 			snap.forEach(document => {
 				professionals.push({
-					...(document.data() as Professional),
+					...mapProfessionalDto(document.data() as ProfessionalDto),
 					id: document.id
 				})
 			})
@@ -85,7 +91,11 @@ export function professionalsService(): {
 				return null
 			}
 
-			return { ...(snap.data() as Professional), id: snap.id }
+			const professional: Professional = mapProfessionalDto(
+				snap.data() as ProfessionalDto
+			)
+
+			return { ...professional, id: snap.id }
 		} catch (error) {
 			console.error('❌ Error fetching professional by ID:', error)
 			throw error
@@ -93,11 +103,11 @@ export function professionalsService(): {
 	}
 
 	const saveProfessional = async (
-		professional: Professional
+		professionalDto: ProfessionalDto
 	): Promise<Professional> => {
 		try {
-			const checksummed: Address = checksumAddress(professional.address)
-			professional.address = checksummed
+			const checksummed: Address = checksumAddress(professionalDto.address)
+			professionalDto.address = checksummed
 
 			const savedProfessional: Professional | null =
 				await getProfessionalByAddress(checksummed)
@@ -106,7 +116,9 @@ export function professionalsService(): {
 				// throw new Error('Professional already exists')
 			}
 
-			const docRef = await addDoc(professionalCollection, professional)
+			const docRef = await addDoc(professionalCollection, professionalDto)
+
+			const professional: Professional = mapProfessionalDto(professionalDto)
 
 			return { ...professional, id: docRef.id }
 		} catch (error) {
@@ -120,5 +132,16 @@ export function professionalsService(): {
 		getProfessionalsByCategory,
 		getProfessionalById,
 		saveProfessional
+	}
+}
+
+export function mapProfessionalDto(dto: ProfessionalDto): Professional {
+	const currentCategories: Category[] = categories.filter(
+		(category: Category) => dto.categories.includes(category.title)
+	)
+
+	return {
+		...dto,
+		categories: currentCategories
 	}
 }
