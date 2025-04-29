@@ -181,38 +181,6 @@ export default function Chat(): JSX.Element {
 		setShowDropdown(false)
 	}
 
-	const onSubmit = async (data: Form): Promise<void> => {
-		try {
-			const { photo, ...rest } = data
-
-			const professionalAddress: Address = address
-				? address
-				: (zeroAddress as Address)
-
-			const photoUrl: string = await fileToBase64(photo[0])
-
-			const professional: Professional = {
-				...rest,
-				address: professionalAddress,
-				photoUrl,
-				stars: 5,
-				opinions: []
-			}
-
-			await mutateAsync(professional)
-
-			showAlert({
-				message: 'Professional registered successfully',
-				type: 'success'
-			})
-		} catch (error) {
-			showAlert({
-				message: `Error registering professional: ${handleError(error)}`,
-				type: 'error'
-			})
-		}
-	}
-
 	if (error) {
 		showAlert({
 			message: `Error: ${handleError(error)}`,
@@ -221,7 +189,7 @@ export default function Chat(): JSX.Element {
 	}
 
 	const professional: Professional = {
-		id: 1,
+		id: '1',
 		name: 'John Doe',
 		city: 'New York',
 		stars: 5,
@@ -236,7 +204,8 @@ export default function Chat(): JSX.Element {
 				date: '2025-04-25',
 				comment: 'Excellent service, very professional!',
 				avatar: 'https://dummyimage.com/80x80/ccc/000&text=A',
-				verified: true
+				verified: true,
+				stars: 5
 			},
 			{
 				id: 2,
@@ -244,9 +213,12 @@ export default function Chat(): JSX.Element {
 				date: '2025-04-20',
 				comment: 'Highly recommended.',
 				avatar: 'https://dummyimage.com/80x80/ccc/000&text=B',
-				verified: false
+				verified: false,
+				stars: 4
 			}
-		]
+		],
+		lastName: '',
+		categories: []
 	}
 	const [requestChat, setRequestChat] = useState(false)
 	const [chatId, setChatId] = useState('')
@@ -267,7 +239,7 @@ export default function Chat(): JSX.Element {
 			setPaymentRequest(data)
 		})
 
-		return () => {
+		return (): void => {
 			socket?.off('payment_requested')
 		}
 	}, [socket])
@@ -287,128 +259,165 @@ export default function Chat(): JSX.Element {
 		saveLocalStorage('chatId', uuid)
 	}
 
+	const onSubmit = async (data: Form): Promise<void> => {
+		try {
+			const { photo, ...rest } = data
+
+			const professionalAddress: Address = address
+				? address
+				: (zeroAddress as Address)
+
+			const photoUrl: string = await fileToBase64(photo[0])
+
+			const professional: Professional = {
+				...rest,
+				address: professionalAddress,
+				photoUrl,
+				stars: 5,
+				opinions: []
+			}
+
+			_handleRequestChat()
+			await mutateAsync(professional)
+
+			showAlert({
+				message: 'Professional registered successfully',
+				type: 'success'
+			})
+		} catch (error) {
+			showAlert({
+				message: `Error registering professional: ${handleError(error)}`,
+				type: 'error'
+			})
+		}
+	}
+
 	return (
 		<Layout>
-			<div className="grid grid-cols-1 md:grid-cols-2">
-				<form
-					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md w-full h-full"
-				>
-					<h2 className="text-xl font-semibold text-orange-500">
-						Professional information
-					</h2>
-					<div className="flex items-center space-x-12 text-gray-300">
-						<Image
-							src={`https://dummyimage.com/120x120/eee/aaa.jpg&text=${professional.name.charAt(0).toUpperCase()}`}
-							alt={professional.name}
-							width={250}
-							height={250}
-							className="rounded-full object-cover"
-						/>
-						<div className="flex flex-col space-y-3 w-full">
-							<div className="flex items-center space-x-3">
-								<h3 className="text-xl font-semibold">{professional.name}</h3>
-								<StarRow stars={professional.stars} />
-							</div>
-							<p className="text-gray-700">{professional.description}</p>
-						</div>
-					</div>
-					<h2 className="text-lg font-semibold text-orange-500">
-						About the project
-					</h2>
-					<div className="flex flex-col items-center space-y-3">
-						<div className="flex justify-between items-center w-full">
-							{/* Name, Last Name, Email, City, Description */}
-							<div className="flex flex-col space-y-3 w-full">
-								{/* Name */}
-								<div>
-									<input
-										type="text"
-										placeholder="Name"
-										{...register('name')}
-										className="input input-bordered w-full"
-										disabled={isPending || isSubmitting}
-									/>
-									{errors.name && (
-										<p className="text-red-500 text-sm">
-											{errors.name.message}
-										</p>
-									)}
-								</div>
-
-								{/* Description */}
-								<div>
-									<textarea
-										rows={4}
-										placeholder="Description"
-										{...register('description')}
-										className="textarea textarea-bordered w-full"
-										disabled={isPending || isSubmitting}
-									></textarea>
-									{errors.description && (
-										<p className="text-red-500 text-sm">
-											{errors.description.message}
-										</p>
-									)}
-									<p className="mt-1 mr-1 text-right text-base-300">
-										{watchDescription.length}/{DESCRIPTION_MAX}
-									</p>
-								</div>
-							</div>
-						</div>
-
-						{/* Categories */}
-						<div>
-							<h2 className="text-center text-xl font-semibold text-orange-500">
-								Select Categories
-							</h2>
-
-							<div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-52 overflow-y-auto">
-								{categories.map(({ title, label, img, href }) => (
-									<button
-										type="button"
-										key={href}
-										onClick={() => toggleCategory(title)}
-										className={`flex flex-col items-center gap-2 rounded-lg p-4 transition hover:bg-orange-100 border-2 ${
-											isSelected(title)
-												? 'border-orange-500 bg-orange-50'
-												: 'border-transparent'
-										}`}
-										disabled={isPending}
-									>
-										<Image src={img} alt={label} width={44} height={44} />
-										<span className="text-sm font-medium text-center text-gray-500">
-											{label}
-										</span>
-									</button>
-								))}
-							</div>
-
-							{errors.categories && (
-								<p className="text-red-500 text-sm">
-									{errors.categories.message}
-								</p>
-							)}
-						</div>
-					</div>
-
-					<button
-						type="submit"
-						className="btn bg-orange-500 text-white hover:bg-orange-600"
-						disabled={isPending}
-						//this function is not needed, i use for test
-						onClick={_handleRequestChat}
+			<div
+				className={`w-full ${!requestChat && 'grid grid-cols-1 lg:grid-cols-2'} gap-10`}
+			>
+				{!requestChat && (
+					<form
+						// onSubmit={handleSubmit(onSubmit)}
+						className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md w-full h-full"
 					>
-						{isPending ? 'Registering...' : 'Request service'}
-					</button>
-				</form>
-				<div className="flex-1 h-auto border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md ml-4">
+						<h2 className="text-xl font-semibold text-orange-500">
+							Professional information
+						</h2>
+						<div className="flex items-center space-x-12 text-gray-300">
+							<Image
+								src={`https://dummyimage.com/120x120/eee/aaa.jpg&text=${professional.name.charAt(0).toUpperCase()}`}
+								alt={professional.name}
+								width={250}
+								height={250}
+								className="rounded-full object-cover"
+							/>
+							<div className="flex flex-col space-y-3 w-full">
+								<div className="flex items-center space-x-3">
+									<h3 className="text-xl font-semibold">{professional.name}</h3>
+									<StarRow stars={professional.stars} />
+								</div>
+								<p className="text-gray-700">{professional.description}</p>
+							</div>
+						</div>
+						<h2 className="text-lg font-semibold text-orange-500">
+							About the project
+						</h2>
+						<div className="flex flex-col items-center space-y-3">
+							<div className="flex justify-between items-center w-full">
+								{/* Name, Last Name, Email, City, Description */}
+								<div className="flex flex-col space-y-3 w-full">
+									{/* Name */}
+									<div>
+										<input
+											type="text"
+											placeholder="Name"
+											{...register('name')}
+											className="input input-bordered w-full"
+											disabled={isPending || isSubmitting}
+										/>
+										{errors.name && (
+											<p className="text-red-500 text-sm">
+												{errors.name.message}
+											</p>
+										)}
+									</div>
+
+									{/* Description */}
+									<div>
+										<textarea
+											rows={4}
+											placeholder="Description"
+											{...register('description')}
+											className="textarea textarea-bordered w-full"
+											disabled={isPending || isSubmitting}
+										></textarea>
+										{errors.description && (
+											<p className="text-red-500 text-sm">
+												{errors.description.message}
+											</p>
+										)}
+										<p className="mt-1 mr-1 text-right text-base-300">
+											{watchDescription.length}/{DESCRIPTION_MAX}
+										</p>
+									</div>
+								</div>
+							</div>
+
+							{/* Categories */}
+							<div>
+								<h2 className="text-center text-xl font-semibold text-orange-500">
+									Select Categories
+								</h2>
+
+								<div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-52 overflow-y-auto">
+									{categories.map(({ title, label, img, href }) => (
+										<button
+											type="button"
+											key={href}
+											onClick={() => toggleCategory(title)}
+											className={`flex flex-col items-center gap-2 rounded-lg p-4 transition hover:bg-orange-100 border-2 ${
+												isSelected(title)
+													? 'border-orange-500 bg-orange-50'
+													: 'border-transparent'
+											}`}
+											disabled={isPending}
+										>
+											<Image src={img} alt={label} width={44} height={44} />
+											<span className="text-sm font-medium text-center text-gray-500">
+												{label}
+											</span>
+										</button>
+									))}
+								</div>
+
+								{errors.categories && (
+									<p className="text-red-500 text-sm">
+										{errors.categories.message}
+									</p>
+								)}
+							</div>
+						</div>
+
+						<button
+							type="submit"
+							className="btn bg-orange-500 text-white hover:bg-orange-600"
+							disabled={isPending}
+							onClick={_handleRequestChat}
+						>
+							{isPending ? 'Registering...' : 'Request service'}
+						</button>
+					</form>
+				)}
+
+				<div className="flex-1 h-auto border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md">
 					<h2 className="text-xl font-semibold text-orange-500 mb-4">
 						Chat with Professional
 					</h2>
 					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
 						{isPending ? (
-							<div className="flex justify-center items-center h-full">
+							<div className="flex items-center justify-center h-full">
 								<span className="loading loading-spinner loading-lg text-orange-500"></span>
 							</div>
 						) : (
