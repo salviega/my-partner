@@ -1,9 +1,10 @@
 import {
+	addDoc,
 	collection,
 	doc,
+	getDoc,
 	getDocs,
 	query,
-	setDoc,
 	where
 } from 'firebase/firestore'
 import { Address, checksumAddress } from 'viem'
@@ -16,6 +17,8 @@ const professionalCollection = collection(db, 'professionals')
 
 export function professionalsService(): {
 	getProfessionalByAddress: (address: Address) => Promise<Professional | null>
+	getProfessionalsByCategory: (category: string) => Promise<Professional[]>
+	getProfessionalById: (id: string) => Promise<Professional | null>
 	saveProfessional: (user: Professional) => Promise<Professional>
 } {
 	const getProfessionalByAddress = async (
@@ -44,6 +47,51 @@ export function professionalsService(): {
 		}
 	}
 
+	const getProfessionalsByCategory = async (
+		categoryTitle: string
+	): Promise<Professional[]> => {
+		try {
+			const q = query(
+				professionalCollection,
+				where('categories', 'array-contains', categoryTitle)
+			)
+
+			const snap = await getDocs(q)
+
+			const professionals: Professional[] = []
+
+			snap.forEach(document => {
+				professionals.push({
+					...(document.data() as Professional),
+					id: document.id
+				})
+			})
+
+			return professionals
+		} catch (error) {
+			console.error('❌ Error fetching pros:', error)
+			throw error
+		}
+	}
+
+	const getProfessionalById = async (
+		id: string
+	): Promise<Professional | null> => {
+		try {
+			const ref = doc(db, 'professionals', id)
+			const snap = await getDoc(ref)
+
+			if (!snap.exists()) {
+				return null
+			}
+
+			return { ...(snap.data() as Professional), id: snap.id }
+		} catch (error) {
+			console.error('❌ Error fetching professional by ID:', error)
+			throw error
+		}
+	}
+
 	const saveProfessional = async (
 		professional: Professional
 	): Promise<Professional> => {
@@ -51,11 +99,16 @@ export function professionalsService(): {
 			const checksummed: Address = checksumAddress(professional.address)
 			professional.address = checksummed
 
-			const professionalRef = doc(professionalCollection, checksummed)
+			const savedProfessional: Professional | null =
+				await getProfessionalByAddress(checksummed)
 
-			await setDoc(professionalRef, professional)
+			if (savedProfessional) {
+				// throw new Error('Professional already exists')
+			}
 
-			return professional
+			const docRef = await addDoc(professionalCollection, professional)
+
+			return { ...professional, id: docRef.id }
 		} catch (error) {
 			console.error('❌ Error saving professional:', error)
 			throw error
@@ -64,6 +117,8 @@ export function professionalsService(): {
 
 	return {
 		getProfessionalByAddress,
+		getProfessionalsByCategory,
+		getProfessionalById,
 		saveProfessional
 	}
 }

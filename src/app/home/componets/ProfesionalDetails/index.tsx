@@ -1,8 +1,9 @@
 import Image from 'next/image'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { JSX } from 'react'
 
 import { Professional } from '@/models'
+import { useStore } from '@/store'
 
 import OpinionsSection from '../OpinionSection'
 import StarRow from '../StartRow'
@@ -13,40 +14,55 @@ type Props = {
 }
 
 export default function ProfessionalDetails(props: Props): JSX.Element {
-	const { professional, onBack } = props
+	const { professional: selectedProfessional, onBack } = props
+
+	// store
+	const setProfessional = useStore(state => state.setProfessional)
+
+	// hooks
+	const router = useRouter()
+
+	const quote = (): void => {
+		setProfessional(selectedProfessional)
+		router.push(`/console/request/${selectedProfessional.id}`)
+	}
 
 	return (
-		<div className="flex flex-col items-center space-y-8 p-6 sm:h-96 overflow-y-auto">
+		<div className="flex flex-col items-center space-y-8 p-6 w-full sm:h-96 overflow-y-auto">
 			{/* Bio */}
 			<div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-x-12 text-gray-300">
 				<Image
-					src={`https://dummyimage.com/120x120/eee/aaa.jpg&text=${professional.name.charAt(0).toUpperCase()}`}
-					alt={professional.name}
+					src={
+						selectedProfessional.photoUrl
+							? selectedProfessional.photoUrl
+							: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
+					}
+					alt={selectedProfessional.name}
 					width={250}
 					height={250}
 					className="rounded-full object-cover"
 				/>
-				<div className="flex flex-col space-y-3 w-full">
+				<div className="flex flex-col items-center space-y-3 w-full">
 					<div className="flex flex-col sm:flex-row items-center sm:space-x-3">
-						<h3 className="text-xl font-semibold">{professional.name}</h3>
-						<StarRow stars={professional.stars} />
+						<h3 className="text-xl font-semibold">
+							{selectedProfessional.name}
+						</h3>
+						<StarRow stars={selectedProfessional.stars} />
 					</div>
 					<p className="text-center sm:text-start text-gray-700">
-						{professional.description}
+						{selectedProfessional.description}
 					</p>
-					<Link
-						href={`request/${professional.id}`}
-						className="flex justify-center sm:flex-none sm:justify-normal"
+					<button
+						className="btn max-w-max text-white bg-orange-500 hover:bg-orange-600"
+						onClick={quote}
 					>
-						<button className="btn max-w-max text-white bg-orange-500 hover:bg-orange-600">
-							Quote
-						</button>
-					</Link>
+						Quote
+					</button>
 				</div>
 			</div>
 
 			{/* Opinions */}
-			<OpinionsSection professionalName={professional.name} />
+			<OpinionsSection professional={selectedProfessional} />
 			{onBack && (
 				<button
 					onClick={() => onBack(false)}
