@@ -1,4 +1,12 @@
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore'
+import {
+	addDoc,
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	where
+} from 'firebase/firestore'
 import { Address, checksumAddress } from 'viem'
 
 import { Professional } from '@/models'
@@ -9,6 +17,8 @@ const professionalCollection = collection(db, 'professionals')
 
 export function professionalsService(): {
 	getProfessionalByAddress: (address: Address) => Promise<Professional | null>
+	getProfessionalsByCategory: (category: string) => Promise<Professional[]>
+	getProfessionalById: (id: string) => Promise<Professional | null>
 	saveProfessional: (user: Professional) => Promise<Professional>
 } {
 	const getProfessionalByAddress = async (
@@ -33,6 +43,51 @@ export function professionalsService(): {
 			return professional
 		} catch (error) {
 			console.error('❌ Error fetching professional:', error)
+			throw error
+		}
+	}
+
+	const getProfessionalsByCategory = async (
+		categoryTitle: string
+	): Promise<Professional[]> => {
+		try {
+			const q = query(
+				professionalCollection,
+				where('categories', 'array-contains', categoryTitle)
+			)
+
+			const snap = await getDocs(q)
+
+			const professionals: Professional[] = []
+
+			snap.forEach(document => {
+				professionals.push({
+					...(document.data() as Professional),
+					id: document.id
+				})
+			})
+
+			return professionals
+		} catch (error) {
+			console.error('❌ Error fetching pros:', error)
+			throw error
+		}
+	}
+
+	const getProfessionalById = async (
+		id: string
+	): Promise<Professional | null> => {
+		try {
+			const ref = doc(db, 'professionals', id)
+			const snap = await getDoc(ref)
+
+			if (!snap.exists()) {
+				return null
+			}
+
+			return { ...(snap.data() as Professional), id: snap.id }
+		} catch (error) {
+			console.error('❌ Error fetching professional by ID:', error)
 			throw error
 		}
 	}
@@ -62,6 +117,8 @@ export function professionalsService(): {
 
 	return {
 		getProfessionalByAddress,
+		getProfessionalsByCategory,
+		getProfessionalById,
 		saveProfessional
 	}
 }

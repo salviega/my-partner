@@ -14,13 +14,16 @@ export interface Opinion {
 	comment: string
 	avatar?: string // URL opcional
 	verified?: boolean
+	stars: number
 }
 
 export interface Professional {
 	address: Address
 	id?: string
 	name: string
+	lastName: string
 	photo?: File
+	categories: string[]
 	photoUrl?: string
 	city: string
 	stars: number

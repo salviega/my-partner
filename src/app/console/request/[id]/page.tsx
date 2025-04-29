@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 import { debounce } from 'lodash'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
@@ -21,7 +21,6 @@ import { Professional } from '@/models'
 import { professionalsService } from '@/services/firebase/professionls'
 import { storageServices } from '@/services/firebase/storage'
 import { openWeatherService } from '@/services/open-weather/locations'
-import { showAlert } from '@/shared/Alert'
 import Layout from '@/shared/Layout'
 import { useStore } from '@/store'
 
@@ -244,6 +243,7 @@ export default function Chat(): JSX.Element {
 			}
 		]
 	}
+
 	const [paymentRequest, setPaymentRequest] = useState<{
 		amount: string
 		currency: string

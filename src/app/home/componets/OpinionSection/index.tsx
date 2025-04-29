@@ -1,23 +1,22 @@
 import Image from 'next/image'
 import { JSX, useMemo } from 'react'
 
-import { opinions } from '@/constants'
-import { Opinion } from '@/models'
+import { Opinion, Professional } from '@/models'
 
 import Coverage from '../Coverage'
 import StarRow from '../StartRow'
 import Subrubros from '../Subrubros'
 
 type Props = {
-	professionalName: string
+	professional: Professional
 }
 
 export default function OpinionsSection(props: Props): JSX.Element {
-	const { professionalName } = props
+	const { professional } = props
 
 	const { average, distribution } = useMemo(() => {
-		const total: number = opinions.length || 1
-		const sum: number = opinions.reduce(
+		const total: number = professional.opinions.length || 1
+		const sum: number = professional.opinions.reduce(
 			(starts: number, opinion: Opinion) => starts + opinion.stars,
 			0
 		)
@@ -25,21 +24,27 @@ export default function OpinionsSection(props: Props): JSX.Element {
 
 		const dist: number[] = [5, 4, 3, 2, 1].map(
 			(star: number) =>
-				opinions.filter((opinion: Opinion) => opinion.stars === star).length
+				professional.opinions.filter(
+					(opinion: Opinion) => opinion.stars === star
+				).length
 		)
 
 		return { average: avg, distribution: dist }
 	}, [])
 
 	return (
-		<section className="flex flex-col  space-y-6 w-full text-gray-600">
+		<section className="flex flex-col space-y-6 w-full text-gray-600">
 			<h3 className="text-center text-lg font-semibold">
-				{professionalName}&#39;s opinions
+				{professional.name}&#39;s opinions
 			</h3>
-			<div className="flex flex-col sm:flex-row sm:justify-around items-start space-y-12">
+			<div
+				className={`flex flex-col sm:flex-row items-start space-y-12 ${professional.opinions.length === 0 ? 'sm:flex-col' : 'sm:flex-row'}`}
+			>
 				{/* Opinions */}
-				<div className="h-64 sm:max-h-max overflow-y-auto space-y-6">
-					{opinions.map((opinion: Opinion) => (
+				<div
+					className={`sm:max-h-max overflow-y-auto space-y-6 ${professional.opinions.length === 0 ? 'h-0' : 'h-64'} `}
+				>
+					{professional.opinions.map((opinion: Opinion) => (
 						<article key={opinion.id} className="space-y-3 border-b pb-4">
 							{/* avatar + autor + fecha + rating */}
 							<header className="flex items-start gap-3">
@@ -89,8 +94,8 @@ export default function OpinionsSection(props: Props): JSX.Element {
 							<ul className="space-y-1 text-sm">
 								{distribution.map((dist: number, index: number) => {
 									const starValue: number = 5 - index
-									const percentage: number = opinions.length
-										? Math.round((dist / opinions.length) * 100)
+									const percentage: number = professional.opinions.length
+										? Math.round((dist / professional.opinions.length) * 100)
 										: 0
 									return (
 										<li key={starValue} className="flex items-center gap-2">
@@ -110,10 +115,10 @@ export default function OpinionsSection(props: Props): JSX.Element {
 					</div>
 
 					{/* Coverage */}
-					<Coverage coverageKm={5} />
+					<Coverage city={professional.city} />
 
 					{/* Subrubros */}
-					<Subrubros />
+					<Subrubros subrubros={professional.categories} />
 				</div>
 			</div>
 		</section>

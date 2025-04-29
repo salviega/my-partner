@@ -98,6 +98,7 @@ export default function Register(): JSX.Element {
 	const getProfessional = useStore(state => state.getProfessional)
 
 	// hooks
+	const [currentAddress, setCurrentAddress] = useState<Address | null>(null)
 	const [checkingMiniPay, setCheckingMiniPay] = useState(true)
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 	const [suggestions, setSuggestions] = useState<string[]>([])
@@ -119,6 +120,7 @@ export default function Register(): JSX.Element {
 					})
 
 					const accountList = accounts as Address[]
+					setCurrentAddress(accountList[0])
 					setAddress(accountList[0])
 					getProfessional(accountList[0])
 				} catch (error) {
@@ -232,7 +234,7 @@ export default function Register(): JSX.Element {
 				opinions: []
 			}
 
-			await mutateAsync(professional)
+			mutateAsync(professional)
 		} catch (error) {
 			toast.error(`Error registering professional: ${handleError(error)}`)
 		}
@@ -251,7 +253,8 @@ export default function Register(): JSX.Element {
 		)
 
 	// Checked MiniPay, no address detected
-	// if (!isAddressSeted || !currentAddress) return <Announcement />
+	// if (!isAddressSeted || !currentAddress)
+	// 	return <Announcement message="You are already registered" />
 
 	// Professional detected
 	return (
