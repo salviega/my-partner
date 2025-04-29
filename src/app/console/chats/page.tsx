@@ -1,8 +1,6 @@
 'use client'
 
-import { JSX, useState } from 'react'
-
-import Layout from '@/shared/Layout'
+import { JSX, useEffect, useState } from 'react'
 
 import ChatComponent from './components/Chat'
 import ChatListComponent from './components/ChatList'
@@ -11,64 +9,59 @@ export default function Chats(): JSX.Element {
 	const [currentUserId, setCurrentUserId] = useState<string>('')
 	const [currentChatId, setCurrentChatId] = useState<string>('')
 	const [secondUserId, setSecondUserId] = useState<string>('')
+
 	return (
-		<>
-			<h1 className="text-2xl font-bold mb-4">Chats</h1>
-			<div className="form-control gap-2 mb-4">
-				<input
-					type="text"
-					onChange={e => setCurrentUserId(e.target.value)}
-					value={currentUserId}
-					placeholder="Enter your user ID"
-					className="input input-bordered w-full"
-				/>
-				<input
-					type="text"
-					onChange={e => setCurrentChatId(e.target.value)}
-					value={currentChatId}
-					placeholder="Enter your chat ID"
-					className="input input-bordered w-full"
-				/>
-				<input
-					type="text"
-					onChange={e => setSecondUserId(e.target.value)}
-					value={secondUserId}
-					placeholder="Enter your second user ID"
-					className="input input-bordered w-full"
-				/>
+		<div className="flex flex-col h-[calc(100vh-4rem)]">
+			{/* Header with user setup */}
+			<div className=" p-4 shadow-md rounded-2xl">
+				<h1 className="text-2xl font-bold flex items-center">
+					<span className="text-primary mr-2">💬</span>
+					Chat Application
+				</h1>
+
+				<div className="flex flex-wrap gap-2 mt-3">
+					<input
+						type="text"
+						onChange={e => setCurrentUserId(e.target.value)}
+						value={currentUserId}
+						placeholder="Your user ID"
+						className="input input-sm input-bordered flex-1 min-w-[200px]"
+					/>
+				</div>
 			</div>
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-				<div className="">
-					<div className="card-body">
-						<h2 className="card-title">Chat List</h2>
-						<ChatListComponent
+
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-10 flex-1 shadow-md rounded-2xl p-4 mt-4">
+				<ChatListComponent
+					currentUserId={currentUserId}
+					onSelectChat={(chatId, secondUserId) => {
+						setCurrentChatId(chatId)
+						setSecondUserId(secondUserId)
+					}}
+				/>
+
+				<div className="bg-white shadow-md rounded-2xl p-4 flex-1">
+					{currentChatId && currentUserId && secondUserId ? (
+						<ChatComponent
+							chatId={currentChatId}
 							currentUserId={currentUserId}
-							onSelectChat={(chatId, secondUserId) => {
-								setCurrentChatId(chatId)
-								setSecondUserId(secondUserId)
-							}}
+							secondUserId={secondUserId}
 						/>
-					</div>
-				</div>
-				<div className="w-full">
-					<div className="card-body">
-						<h2 className="card-title">Chat Window</h2>
-						{currentChatId && currentUserId && secondUserId ? (
-							<ChatComponent
-								chatId={currentChatId}
-								currentUserId={currentUserId}
-								secondUserId={secondUserId}
-							/>
-						) : (
-							<div className="alert alert-info">
-								<span>
-									Selecciona un chat y completa los datos para comenzar.
-								</span>
+					) : (
+						<div className="flex items-center justify-center h-full">
+							<div className="text-center p-6 bg-base-200 rounded-lg max-w-md">
+								<span className="text-4xl text-primary mb-4">💬</span>
+								<h3 className="font-bold text-lg mb-2">
+									No conversation selected
+								</h3>
+								<p className="text-base-content/70">
+									Select a chat from the list or start a new conversation to
+									begin messaging.
+								</p>
 							</div>
-						)}
-					</div>
+						</div>
+					)}
 				</div>
 			</div>
-		</>
+		</div>
 	)
 }
