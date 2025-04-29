@@ -3,53 +3,29 @@
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-// crypto is not needed, we'll use window.crypto instead
-import { debounce } from 'lodash'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
-import { DESCRIPTION_MAX, MAX_FILE_SIZE, VALID_FILE_TYPES } from '@/constants'
-import { fileToBase64, handleError } from '@/helpers'
-import { Professional } from '@/models'
-import { openWeatherService } from '@/services/open-weather/locations'
+import { DESCRIPTION_MAX } from '@/constants'
+import { handleError } from '@/helpers'
 import Announcement from '@/shared/Announcement'
 import Layout from '@/shared/Layout'
 import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
-import { saveLocalStorage } from '@/utils/store.localstorage'
 
 import ChatComponent from '../../chats/components/Chat'
 import { useChatSocket } from '../../chats/hooks/useSocket'
 
 const schema = z.object({
-	name: z.string().min(2, 'Name is required'),
-	lastName: z.string().min(2, 'Last name is required'),
-	email: z.string().email('Invalid email'),
-	description: z.string().min(10, 'Description must be at least 10 characters'),
-	city: z.string().min(2, 'City is required'),
-	categories: z
-		.array(z.string().min(1, 'Category cannot be empty'))
-		.min(1, 'Select at least one category'),
-	photo: z
-		.any()
-		.refine(files => files?.length > 0, { message: 'You must upload a file' })
-		.refine(
-			files => {
-				const file = files?.[0]
-				return file && file.size <= MAX_FILE_SIZE
-			},
-			{ message: 'File size must be less than 5MB' }
-		)
-		.refine(
-			files => {
-				const file = files?.[0]
-				return file && VALID_FILE_TYPES.includes(file.type)
-			},
-			{ message: 'Only .jpg, .png, .gif, .svg formats are supported' }
-		)
+	projectTitle: z.string().min(2, 'Project title is required'),
+	projectDescription: z
+		.string()
+		.min(10, 'Description must be at least 10 characters'),
+	category: z.string().min(1, 'Category is required')
 })
 
 type Form = z.infer<typeof schema>
@@ -65,12 +41,10 @@ export default function Chat(): JSX.Element {
 		resolver: zodResolver(schema)
 	})
 
-	const watchDescription = watch('description') || ''
-	const watchPhoto = watch('photo') || null
-	const { getLocation } = openWeatherService()
+	const watchDescription = watch('projectDescription') || ''
+	const selectedCategory = watch('category') || ''
 
 	// store
-
 	const isSettingProfessional = useStore(state => state.isSettingProfessional)
 
 	const isSettingSelectedProfessional = useStore(
@@ -90,27 +64,27 @@ export default function Chat(): JSX.Element {
 
 	// hooks
 	const { id } = useParams()
-	const [_loading, setLoading] = useState<boolean>(false)
-	const [_showDropdown, setShowDropdown] = useState<boolean>(false)
-	const [_previewUrl, setPreviewUrl] = useState<string | null>(null)
+	const [chatId, setChatId] = useState<string>('')
 	const [checkingMiniPay, setCheckingMiniPay] = useState<boolean>(true)
+	const [requestChat, setRequestChat] = useState<boolean>(false)
 
-	const [_suggestions, setSuggestions] = useState<string[]>([])
+	const [paymentRequest, setPaymentRequest] = useState<{
+		amount: string
+		currency: string
+		requester: string
+	} | null>(null)
 
-	const selectedCategories = watch('categories') || []
+	const isSelected = (value: string): boolean => selectedCategory === value
 
-	const isSelected = (value: string): boolean =>
-		selectedCategories.includes(value)
-
-	const toggleCategory = (selectedCategory: string): void => {
-		const updated: string[] = isSelected(selectedCategory)
-			? selectedCategories.filter(
-					(category: string) => category !== selectedCategory
-				)
-			: [...selectedCategories, selectedCategory]
-
-		setValue('categories', updated, { shouldValidate: true })
+	const handleSelectCategory = (value: string): void => {
+		setValue('category', value, { shouldValidate: true })
 	}
+
+	const { socket } = useChatSocket(
+		requestChat || chatId !== '' ? chatId : '',
+		'0x1234567890abcdef1234567890abcdef12345678',
+		'0xabcdef1234567890abcdef1234567890abcdef12'
+	)
 
 	useEffect(() => {
 		async function checkMiniPay(): Promise<void> {
@@ -155,91 +129,14 @@ export default function Chat(): JSX.Element {
 		}
 	}, [id, selectedProfessional, getSelectedProfessionalById])
 
-	useEffect(() => {
-		if (!watchPhoto || watchPhoto.length === 0) {
-			setPreviewUrl(null)
-			return
-		}
-
-		const file = watchPhoto[0]
-
-		if (file) {
-			const objectUrl = URL.createObjectURL(file)
-			setPreviewUrl(objectUrl)
-
-			return (): void => {
-				URL.revokeObjectURL(objectUrl)
-			}
-		}
-	}, [watchPhoto])
-
-	const fetchLocations = debounce(async (query: string) => {
-		if (query.length < 3) {
-			setSuggestions([])
-			setShowDropdown(false)
-			return
-		}
-
-		setLoading(true)
-
-		try {
-			if (query.toLowerCase() === 'online') {
-				const results: string = 'Online'
-				setValue('city', results, { shouldValidate: true })
-				setSuggestions([results])
-				setShowDropdown(true)
-				return
-			}
-
-			const results: string = await getLocation(query)
-
-			if (results.length > 0) {
-				setSuggestions([results])
-				setShowDropdown(true)
-			} else if (results === 'City not found') {
-				setValue('city', results, { shouldValidate: true })
-				setSuggestions([results])
-				setShowDropdown(true)
-			} else {
-				setSuggestions([])
-				setShowDropdown(false)
-			}
-		} catch (error) {
-			setShowDropdown(false)
-			setSuggestions([])
-			handleError(error)
-		} finally {
-			setLoading(false)
-		}
-	}, 500)
-
-	const _handleLocationChange = (
-		event: React.ChangeEvent<HTMLInputElement>
-	): void => {
-		const query: string = event.target.value
-		setValue('city', query, { shouldValidate: true })
-		fetchLocations(query)
-	}
-
-	const _handleSelectLocation = (location: string): void => {
-		setValue('city', location, { shouldValidate: true })
-		setSuggestions([])
-		setShowDropdown(false)
-	}
-
-	const [requestChat, setRequestChat] = useState(false)
-	const [chatId, setChatId] = useState('')
-	const [paymentRequest, setPaymentRequest] = useState<{
-		amount: string
-		currency: string
-		requester: string
-	} | null>(null)
-
-	const { socket } = useChatSocket(
-		requestChat || chatId !== '' ? chatId : '',
-		'0x1234567890abcdef1234567890abcdef12345678',
-		'0xabcdef1234567890abcdef1234567890abcdef12'
-	)
+	//use effect para verificar si el chatId existe en el localStorage
+	// useEffect(() => {
+	// 	const storedChatId = localStorage.getItem('chatId')
+	// 	if (storedChatId) {
+	// 		setChatId(storedChatId)
+	// 		setRequestChat(true)
+	// 	}
+	// }, [])
 
 	useEffect(() => {
 		socket?.on('payment_requested', data => {
@@ -251,52 +148,49 @@ export default function Chat(): JSX.Element {
 		}
 	}, [socket])
 
-	//use effect para verificar si el chatId existe en el localStorage
-	useEffect(() => {
-		const storedChatId = localStorage.getItem('chatId')
-		if (storedChatId) {
-			setChatId(storedChatId)
-			setRequestChat(true)
-		}
-	}, [])
-
-	const _handleRequestChat = (): void => {
-		const uuid = crypto.randomUUID()
-		setChatId(uuid)
-		setRequestChat(true)
-		saveLocalStorage('chatId', uuid)
-	}
+	// const _handleRequestChat = (): void => {
+	// 	const uuid = crypto.randomUUID()
+	// 	setChatId(uuid)
+	// 	setRequestChat(true)
+	// 	saveLocalStorage('chatId', uuid)
+	// }
 
 	const onSubmit = async (data: Form): Promise<void> => {
 		try {
-			const { photo, ...rest } = data
+			console.log('data', data)
 
-			const professionalAddress: Address = address
-				? address
-				: (zeroAddress as Address)
+			/*
+				Hello profesional.name! 👋
+				I want to quote you for a job I need done:
+				reques.title
+				reques.description
+				I need it done by reques.starDate
+				I live in reques.addressClient
 
-			const photoUrl: string = await fileToBase64(photo[0])
+				How much would it cost?
+				Thanks!
+			---------------------------
 
-			const professional: Professional = {
-				...rest,
-				address: professionalAddress,
-				photoUrl,
-				stars: 5,
-				opinions: []
-			}
+			To Do
 
-			_handleRequestChat()
-			await mutateAsync(professional)
+			Si el chat no ha sido respondido por el profesional aparece
+			un alerta de esperando respuesta
 
-			showAlert({
-				message: 'Professional registered successfully',
-				type: 'success'
-			})
+
+			formulario all stablecoins y seleccionar el metodo de pago.
+
+
+			el profesional cuando pide el monto debe digitar el monto
+			/get-pay 200 cCOP
+
+
+			y al cliente se le vera una interfaz para aceptar o rechazar el pago.
+
+			el cliente puede ver el monto y el metodo de pago
+
+			*/
 		} catch (error) {
-			showAlert({
-				message: `Error registering professional: ${handleError(error)}`,
-				type: 'error'
-			})
+			toast.error(`Error: ${handleError(error)}`)
 		}
 	}
 
@@ -324,7 +218,7 @@ export default function Chat(): JSX.Element {
 			>
 				{!requestChat && (
 					<form
-						// onSubmit={handleSubmit(onSubmit)}
+						onSubmit={handleSubmit(onSubmit)}
 						className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md w-full h-full"
 					>
 						{/* Profesional info */}
@@ -373,14 +267,14 @@ export default function Chat(): JSX.Element {
 									<div>
 										<input
 											type="text"
-											placeholder="Name"
-											{...register('name')}
+											placeholder="Project title"
+											{...register('projectTitle')}
 											className="input input-bordered w-full"
 											disabled={isSubmitting}
 										/>
-										{errors.name && (
+										{errors.projectTitle && (
 											<p className="text-red-500 text-sm">
-												{errors.name.message}
+												{errors.projectTitle.message}
 											</p>
 										)}
 									</div>
@@ -389,17 +283,17 @@ export default function Chat(): JSX.Element {
 									<div>
 										<textarea
 											rows={4}
-											placeholder="Description"
-											{...register('description')}
+											placeholder="Project description"
+											{...register('projectDescription')}
 											className="textarea textarea-bordered w-full"
 											disabled={isSubmitting}
 										></textarea>
-										{errors.description && (
+										{errors.projectDescription && (
 											<p className="text-red-500 text-sm">
-												{errors.description.message}
+												{errors.projectDescription.message}
 											</p>
 										)}
-										<p className="mt-1 mr-1 text-right text-base-300">
+										<p className="mt-1 mr-1 text-right text-gray-500">
 											{watchDescription.length}/{DESCRIPTION_MAX}
 										</p>
 									</div>
@@ -419,7 +313,7 @@ export default function Chat(): JSX.Element {
 												<button
 													type="button"
 													key={href}
-													onClick={() => toggleCategory(title)}
+													onClick={() => handleSelectCategory(title)}
 													className={`flex flex-col items-center gap-2 rounded-lg p-4 transition hover:bg-orange-100 border-2 ${
 														isSelected(title)
 															? 'border-orange-500 bg-orange-50'
@@ -436,9 +330,9 @@ export default function Chat(): JSX.Element {
 									</div>
 								)}
 
-								{errors.categories && (
+								{errors.category && (
 									<p className="text-red-500 text-sm">
-										{errors.categories.message}
+										{errors.category.message}
 									</p>
 								)}
 							</div>
@@ -447,7 +341,6 @@ export default function Chat(): JSX.Element {
 						<button
 							type="submit"
 							className="btn bg-orange-500 text-white hover:bg-orange-600"
-							onClick={_handleRequestChat}
 						>
 							{isSubmitting ? 'Registering...' : 'Request service'}
 						</button>

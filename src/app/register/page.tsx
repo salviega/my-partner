@@ -106,7 +106,6 @@ export default function Register(): JSX.Element {
 
 	// hooks
 	const router = useRouter()
-	const [currentAddress, setCurrentAddress] = useState<Address | null>(null)
 	const [checkingMiniPay, setCheckingMiniPay] = useState(true)
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 	const [suggestions, setSuggestions] = useState<string[]>([])
@@ -429,7 +428,7 @@ export default function Register(): JSX.Element {
 														{errors.description.message}
 													</p>
 												)}
-												<p className="mt-1 mr-1 text-right text-base-300">
+												<p className="mt-1 mr-1 text-right text-gray-500">
 													{watchDescription.length}/{DESCRIPTION_MAX}
 												</p>
 											</div>
