@@ -1,6 +1,6 @@
 'use client'
 
-import { JSX, useEffect, useState } from 'react'
+import { JSX, useState } from 'react'
 
 import ChatComponent from './components/Chat'
 import ChatListComponent from './components/ChatList'
@@ -13,12 +13,11 @@ export default function Chats(): JSX.Element {
 	return (
 		<div className="flex flex-col h-[calc(100vh-4rem)]">
 			{/* Header with user setup */}
-			<div className=" p-4 shadow-md rounded-2xl">
+			<div className=" p-4 shadow-md bg-white rounded-2xl">
 				<h1 className="text-2xl font-bold flex items-center">
 					<span className="text-primary mr-2">💬</span>
 					Chat Application
 				</h1>
-
 				<div className="flex flex-wrap gap-2 mt-3">
 					<input
 						type="text"
@@ -30,7 +29,7 @@ export default function Chats(): JSX.Element {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-10 flex-1 shadow-md rounded-2xl p-4 mt-4">
+			<div className="grid grid-cols-1 lg:grid-cols-2 gap-10 flex-1 mt-4">
 				<ChatListComponent
 					currentUserId={currentUserId}
 					onSelectChat={(chatId, secondUserId) => {
