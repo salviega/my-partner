@@ -14,6 +14,7 @@ import { DESCRIPTION_MAX } from '@/constants'
 import { handleError } from '@/helpers'
 import Announcement from '@/shared/Announcement'
 import Layout from '@/shared/Layout'
+import Modal from '@/shared/Modal'
 import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
 
@@ -351,6 +352,9 @@ export default function Chat(): JSX.Element {
 					<h2 className="text-xl font-semibold text-orange-500 mb-4">
 						Chat with Professional
 					</h2>
+					{selectedProfessional && (
+						<Modal selectedProfessional={selectedProfessional} />
+					)}
 					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
 						{isSubmitting ? (
 							<div className="flex items-center justify-center h-full">

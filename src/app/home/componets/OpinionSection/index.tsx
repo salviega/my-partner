@@ -1,5 +1,5 @@
-import Image from 'next/image'
 import { JSX, useMemo } from 'react'
+import Blockies from 'react-blockies'
 
 import { Opinion, Professional } from '@/models'
 
@@ -42,14 +42,17 @@ export default function OpinionsSection(props: Props): JSX.Element {
 			>
 				{/* Opinions */}
 				<div
-					className={`sm:max-h-max overflow-y-auto space-y-6 ${professional.opinions.length === 0 ? 'h-0' : 'h-64'} `}
+					className={`w-full sm:max-h-max overflow-y-auto space-y-6 ${professional.opinions.length === 0 ? 'h-0' : 'h-64'} `}
 				>
 					{professional.opinions.map((opinion: Opinion) => (
-						<article key={opinion.id} className="space-y-3 border-b pb-4">
+						<article
+							key={opinion.id}
+							className="space-y-3 border-b pb-4 w-full"
+						>
 							{/* avatar + autor + fecha + rating */}
-							<header className="flex items-start gap-3">
+							<header className="flex items-start gap-3 w-full">
 								<div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
-									<Image
+									{/* <Image
 										src={
 											opinion.avatar ??
 											`https://dummyimage.com/120x120/eee/aaa.jpg&text=${opinion.author.charAt(0).toUpperCase()}`
@@ -58,13 +61,30 @@ export default function OpinionsSection(props: Props): JSX.Element {
 										width={40}
 										height={40}
 										className="object-cover"
+									/> */}
+									<Blockies
+										seed={opinion.author}
+										size={12}
+										scale={3}
+										className="rounded-full"
 									/>
 								</div>
 								<div className="flex-1">
-									<p className="font-medium leading-tight">{opinion.author}</p>
-									<p className="text-xs text-gray-500">{opinion.date}</p>
+									<div className="">
+										<a
+											href={`https://alfajores.celoscan.io/address/${opinion.author}`}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-sm text-gray-700 hover:text-orange-500 transition-colors"
+										>
+											<p className="font-medium">
+												{`${opinion.author.slice(0, 6)}…${opinion.author.slice(-6)}`}
+											</p>
+										</a>
+										<p className="text-xs text-gray-500">{opinion.createdAt}</p>
+									</div>
+									<StarRow stars={opinion.stars} />
 								</div>
-								<StarRow stars={opinion.stars} />
 							</header>
 
 							{/* Comment */}

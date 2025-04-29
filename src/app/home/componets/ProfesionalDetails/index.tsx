@@ -44,6 +44,7 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 					height={250}
 					className="rounded-full object-cover"
 				/>
+
 				<div className="flex flex-col items-center space-y-3 w-full">
 					<div className="flex flex-col sm:flex-row items-center sm:space-x-3">
 						<h3 className="text-xl font-semibold">

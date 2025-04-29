@@ -18,6 +18,7 @@ type Store = {
 	professionalsByCategory: Record<string, Professional[]>
 	selectedProfessional: Professional | null
 	user: User | null
+	destroyStore: VoidFunction
 	getProfessionalByAddress: (address: Address) => Promise<void>
 	getProfessionalById: (id: string) => Promise<void>
 
@@ -52,6 +53,22 @@ export const useStore = create<Store>(set => ({
 	professionalsByCategory: initialProfessionalsByCategory,
 	selectedProfessional: null,
 	user: null,
+
+	destroyStore: () => {
+		set({
+			address: null,
+			isAddressSeted: false,
+			isProfessionalSeted: false,
+			isSettingProfessional: false,
+			isSettingSelectedProfessional: false,
+			isSettingProfessionals: false,
+			isSettingUser: false,
+			professional: null,
+			professionalsByCategory: initialProfessionalsByCategory,
+			selectedProfessional: null,
+			user: null
+		})
+	},
 
 	async getProfessionalByAddress(address: Address): Promise<void> {
 		const { getProfessionalByAddress } = professionalsService()

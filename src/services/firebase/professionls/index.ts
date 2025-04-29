@@ -5,23 +5,63 @@ import {
 	getDoc,
 	getDocs,
 	query,
+	updateDoc,
 	where
 } from 'firebase/firestore'
 import { Address, checksumAddress } from 'viem'
 
 import { categories } from '@/constants'
-import { Category, Professional, ProfessionalDto } from '@/models'
+import {
+	Category,
+	Opinion,
+	OpinionDto,
+	Professional,
+	ProfessionalDto
+} from '@/models'
 
 import { db } from '..'
 
 const professionalCollection = collection(db, 'professionals')
 
 export function professionalsService(): {
+	addOpinion: (
+		professionalId: string,
+		opinion: OpinionDto
+	) => Promise<Professional>
+
 	getProfessionalByAddress: (address: Address) => Promise<Professional | null>
 	getProfessionalsByCategory: (category: string) => Promise<Professional[]>
 	getProfessionalById: (id: string) => Promise<Professional | null>
 	saveProfessional: (user: ProfessionalDto) => Promise<Professional>
 } {
+	const addOpinion = async (
+		professionalId: string,
+		opinionDto: OpinionDto
+	): Promise<Professional> => {
+		const professionalRef = doc(db, 'professionals', professionalId)
+		const professionalSnap = await getDoc(professionalRef)
+
+		if (!professionalSnap.exists()) {
+			throw new Error('Professional not found')
+		}
+
+		const professionalDto: ProfessionalDto =
+			professionalSnap.data() as ProfessionalDto
+
+		const updatedOpinions: OpinionDto[] = [
+			opinionDto,
+			...professionalDto.opinions
+		]
+
+		await updateDoc(professionalRef, { opinions: updatedOpinions })
+
+		professionalDto.opinions = updatedOpinions
+
+		const professional: Professional = mapProfessionalDto(professionalDto)
+
+		return professional
+	}
+
 	const getProfessionalByAddress = async (
 		address: Address
 	): Promise<Professional | null> => {
@@ -128,6 +168,7 @@ export function professionalsService(): {
 	}
 
 	return {
+		addOpinion,
 		getProfessionalByAddress,
 		getProfessionalsByCategory,
 		getProfessionalById,
@@ -142,6 +183,18 @@ export function mapProfessionalDto(dto: ProfessionalDto): Professional {
 
 	return {
 		...dto,
-		categories: currentCategories
+		categories: currentCategories,
+		opinions: dto.opinions.map(mapOpinionDto)
+	}
+}
+
+export function mapOpinionDto(dto: OpinionDto): Opinion {
+	return {
+		...dto,
+		createdAt: new Date(dto.createdAt).toLocaleDateString('en-US', {
+			day: '2-digit',
+			month: '2-digit',
+			year: '2-digit'
+		})
 	}
 }

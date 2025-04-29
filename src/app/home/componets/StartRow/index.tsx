@@ -1,6 +1,12 @@
 import { JSX } from 'react'
 
-export default function StarRow({ stars }: { stars: number }): JSX.Element {
+type Props = {
+	stars: number
+}
+
+export default function StarRow(props: Props): JSX.Element {
+	const { stars } = props
+
 	return (
 		<ul className="flex gap-0.5 text-yellow-400">
 			{[...Array(5)].map((_, index: number) => (

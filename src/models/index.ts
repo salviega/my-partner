@@ -7,10 +7,19 @@ export interface Category {
 	img: string
 }
 
-export interface Opinion {
-	id: number
+export interface OpinionDto {
 	author: string
-	date: string // ISO o string legible
+	createdAt: number // ISO o string legible
+	comment: string
+	avatar?: string // URL opcional
+	verified?: boolean
+	stars: number
+}
+
+export interface Opinion {
+	id?: string
+	author: string
+	createdAt: string // ISO o string legible
 	comment: string
 	avatar?: string // URL opcional
 	verified?: boolean
@@ -27,7 +36,7 @@ export interface ProfessionalDto {
 	city: string
 	stars: number
 	description: string
-	opinions: Opinion[]
+	opinions: OpinionDto[]
 }
 
 export interface Professional {
