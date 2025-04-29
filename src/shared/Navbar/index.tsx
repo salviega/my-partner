@@ -8,6 +8,7 @@ export default function Navbar(): JSX.Element {
 	const pathname: string = usePathname()
 	const splitPath: string[] = pathname.split('/')
 
+	const isHome: boolean = splitPath[1] === ''
 	const isConsole: boolean = splitPath[1] === 'console'
 
 	return (
@@ -37,7 +38,7 @@ export default function Navbar(): JSX.Element {
 						className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
 					>
 						<li>
-							{!isConsole && (
+							{isHome && (
 								<Link href="/register">
 									<p className="text-sm hover:bg-base-200">Are you partner?</p>
 								</Link>
@@ -61,7 +62,7 @@ export default function Navbar(): JSX.Element {
 			<div className="navbar-center hidden lg:flex">
 				<ul className="menu menu-horizontal px-1">
 					<li>
-						{!isConsole && (
+						{isHome && (
 							<Link href="/register">
 								<p className="text-sm hover:bg-base-200">Are you partner?</p>
 							</Link>

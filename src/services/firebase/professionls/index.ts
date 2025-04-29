@@ -1,11 +1,4 @@
-import {
-	collection,
-	doc,
-	getDocs,
-	query,
-	setDoc,
-	where
-} from 'firebase/firestore'
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore'
 import { Address, checksumAddress } from 'viem'
 
 import { Professional } from '@/models'
@@ -51,11 +44,16 @@ export function professionalsService(): {
 			const checksummed: Address = checksumAddress(professional.address)
 			professional.address = checksummed
 
-			const professionalRef = doc(professionalCollection, checksummed)
+			const savedProfessional: Professional | null =
+				await getProfessionalByAddress(checksummed)
 
-			await setDoc(professionalRef, professional)
+			if (savedProfessional) {
+				// throw new Error('Professional already exists')
+			}
 
-			return professional
+			const docRef = await addDoc(professionalCollection, professional)
+
+			return { ...professional, id: docRef.id }
 		} catch (error) {
 			console.error('❌ Error saving professional:', error)
 			throw error

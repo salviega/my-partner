@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { JSX, ReactNode } from 'react'
+import { ToastContainer } from 'react-toastify'
 
-import Alert from '../Alert'
 import Footer from '../Footer'
 import Navbar from '../Navbar'
 
@@ -21,10 +21,18 @@ export default function Layout(props: Props): JSX.Element {
 				{/* Main */}
 				<main className="flex flex-1 flex-col items-center sm:p-12 sm:py-6 w-full h-full">
 					{children}
-					<Alert />
 				</main>
 				{/* Footer */}
 				<Footer />
+				<ToastContainer
+					position="top-center"
+					autoClose={3000}
+					hideProgressBar={false}
+					newestOnTop
+					closeOnClick
+					pauseOnHover
+					draggable
+				/>
 			</div>
 		</QueryClientProvider>
 	)

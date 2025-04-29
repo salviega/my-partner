@@ -18,7 +18,7 @@ export interface Opinion {
 
 export interface Professional {
 	address: Address
-	id?: number
+	id?: string
 	name: string
 	photo?: File
 	photoUrl?: string
