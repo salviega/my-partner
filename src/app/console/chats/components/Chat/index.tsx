@@ -21,7 +21,7 @@ const ChatComponent: React.FC<ChatProps> = ({
 	const [newMessage, setNewMessage] = useState<string>('')
 	const messagesEndRef = useRef<HTMLDivElement>(null)
 
-	const scrollToBottom = () => {
+	const scrollToBottom = (): void => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
 	}
 
@@ -31,7 +31,7 @@ const ChatComponent: React.FC<ChatProps> = ({
 
 	return (
 		<div className="w-full">
-			<div className="h-96 overflow-y-auto">
+			<div className="h-[calc(100vh-4rem)] overflow-y-auto flex flex-col">
 				{messages.map(msg => (
 					<div
 						key={msg.id}
@@ -47,7 +47,7 @@ const ChatComponent: React.FC<ChatProps> = ({
 				<div ref={messagesEndRef}></div>
 			</div>
 
-			<div className="">
+			<div className="sticky bottom-0 left-0 w-full bg-base-100 border-t border-base-300 p-4">
 				<div className="join w-full">
 					<input
 						type="text"
