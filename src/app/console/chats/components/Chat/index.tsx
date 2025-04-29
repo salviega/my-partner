@@ -31,7 +31,7 @@ const ChatComponent: React.FC<ChatProps> = ({
 
 	return (
 		<div className="w-full">
-			<div className="h-[calc(100vh-4rem)] overflow-y-auto flex flex-col">
+			<div className="lg:h-[calc(75vh-4rem)] overflow-y-auto flex flex-col p-10 h-96">
 				{messages.map(msg => (
 					<div
 						key={msg.id}
@@ -47,7 +47,7 @@ const ChatComponent: React.FC<ChatProps> = ({
 				<div ref={messagesEndRef}></div>
 			</div>
 
-			<div className="sticky bottom-0 left-0 w-full bg-base-100 border-t border-base-300 p-4">
+			<div className="sticky bottom-0 left-0 w-full border-t border-base-300 p-4">
 				<div className="join w-full">
 					<input
 						type="text"
