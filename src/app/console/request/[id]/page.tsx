@@ -3,10 +3,11 @@
 import Image from 'next/image'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+// crypto is not needed, we'll use window.crypto instead
 import { debounce } from 'lodash'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
@@ -24,6 +25,7 @@ import { openWeatherService } from '@/services/open-weather/locations'
 import { showAlert } from '@/shared/Alert'
 import Layout from '@/shared/Layout'
 import { useStore } from '@/store'
+import { saveLocalStorage } from '@/utils/store.localstorage'
 
 import ChatComponent from '../../chats/components/Chat'
 import { useChatSocket } from '../../chats/hooks/useSocket'
@@ -75,7 +77,9 @@ export default function Chat(): JSX.Element {
 
 	// services
 	const { saveProfessional } = professionalsService()
-	const { uploadProfessionalPhoto } = storageServices()
+	const {
+		/* uploadProfessionalPhoto */
+	} = storageServices()
 
 	const { mutateAsync, isPending, error } = useMutation({
 		mutationFn: (professional: Professional) => saveProfessional(professional)
@@ -85,11 +89,11 @@ export default function Chat(): JSX.Element {
 	const address = useStore(state => state.address)
 
 	// hooks
-	const [loading, setLoading] = useState<boolean>(false)
-	const [showDropdown, setShowDropdown] = useState<boolean>(false)
-	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+	const [_loading, setLoading] = useState<boolean>(false)
+	const [_showDropdown, setShowDropdown] = useState<boolean>(false)
+	const [_previewUrl, setPreviewUrl] = useState<string | null>(null)
 
-	const [suggestions, setSuggestions] = useState<string[]>([])
+	const [_suggestions, setSuggestions] = useState<string[]>([])
 
 	const selectedCategories = watch('categories') || []
 
@@ -164,7 +168,7 @@ export default function Chat(): JSX.Element {
 		}
 	}, 500)
 
-	const handleLocationChange = (
+	const _handleLocationChange = (
 		event: React.ChangeEvent<HTMLInputElement>
 	): void => {
 		const query: string = event.target.value
@@ -172,7 +176,7 @@ export default function Chat(): JSX.Element {
 		fetchLocations(query)
 	}
 
-	const handleSelectLocation = (location: string): void => {
+	const _handleSelectLocation = (location: string): void => {
 		setValue('city', location, { shouldValidate: true })
 		setSuggestions([])
 		setShowDropdown(false)
@@ -225,6 +229,7 @@ export default function Chat(): JSX.Element {
 		description:
 			'Experienced professional offering top-quality services in the city.',
 		photoUrl: 'https://dummyimage.com/600x400/000/fff&text=John+Doe',
+		address: zeroAddress as Address,
 		opinions: [
 			{
 				id: 1,
@@ -244,19 +249,21 @@ export default function Chat(): JSX.Element {
 			}
 		]
 	}
+	const [requestChat, setRequestChat] = useState(false)
+	const [chatId, setChatId] = useState('')
 	const [paymentRequest, setPaymentRequest] = useState<{
 		amount: string
 		currency: string
 		requester: string
 	} | null>(null)
+
 	const { socket } = useChatSocket(
-		'1',
+		requestChat || chatId !== '' ? chatId : '',
 		'0x1234567890abcdef1234567890abcdef12345678',
-		' 0xabcdef1234567890abcdef1234567890abcdef12'
+		'0xabcdef1234567890abcdef1234567890abcdef12'
 	)
 
 	useEffect(() => {
-		// Escuchar solicitudes de pago
 		socket?.on('payment_requested', data => {
 			setPaymentRequest(data)
 		})
@@ -266,12 +273,27 @@ export default function Chat(): JSX.Element {
 		}
 	}, [socket])
 
+	//use effect para verificar si el chatId existe en el localStorage
+	useEffect(() => {
+		const storedChatId = localStorage.getItem('chatId')
+		if (storedChatId) {
+			setChatId(storedChatId)
+			setRequestChat(true)
+		}
+	}, [])
+	const _handleRequestChat = (): void => {
+		const uuid = crypto.randomUUID()
+		setChatId(uuid)
+		setRequestChat(true)
+		saveLocalStorage('chatId', uuid)
+	}
+
 	return (
 		<Layout>
-			<div className="flex w-full h-full">
+			<div className="grid grid-cols-1 md:grid-cols-2">
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-lg shadow-md w-lg h-full"
+					className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md w-full h-full"
 				>
 					<h2 className="text-xl font-semibold text-orange-500">
 						Professional information
@@ -375,11 +397,13 @@ export default function Chat(): JSX.Element {
 						type="submit"
 						className="btn bg-orange-500 text-white hover:bg-orange-600"
 						disabled={isPending}
+						//this function is not needed, i use for test
+						onClick={_handleRequestChat}
 					>
 						{isPending ? 'Registering...' : 'Request service'}
 					</button>
 				</form>
-				<div className="flex-1 h-full border-2 border-gray-200 bg-white p-6 rounded-lg shadow-md ml-4">
+				<div className="flex-1 h-auto border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md ml-4">
 					<h2 className="text-xl font-semibold text-orange-500 mb-4">
 						Chat with Professional
 					</h2>
@@ -390,40 +414,54 @@ export default function Chat(): JSX.Element {
 							</div>
 						) : (
 							<>
-								<ChatComponent
-									chatId="1"
-									currentUserId="0x1234567890abcdef1234567890abcdef12345678"
-									secondUserId="0xabcdef1234567890abcdef1234567890abcdef12"
-								/>
-								{paymentRequest && (
-									<div className="mt-4 bg-white p-4 rounded-2xl shadow-2xl border broder-gray-200">
-										<h2 className="text-lg font-semibold text-orange-500 mb-2">
-											Payment Request
-										</h2>
-										<p className="text-gray-700 mb-3">
-											<span className="font-medium">
-												{paymentRequest.requester}
-											</span>{' '}
-											is requesting a payment of{' '}
-											<span className="font-medium">
-												{paymentRequest.amount} {paymentRequest.currency}
-											</span>
-										</p>
-										<div className="flex justify-end gap-3">
-											<button
-												className="btn btn-sm border-gray-300 hover:bg-gray-100"
-												onClick={() => setPaymentRequest(null)}
-											>
-												Decline
-											</button>
-											<button
-												className="btn btn-sm bg-orange-500 text-white hover:bg-orange-600 border-none"
-												onClick={() => console.log('Payment accepted')}
-											>
-												Accept Payment
-											</button>
-										</div>
-									</div>
+								{!requestChat ? (
+									<h2 className="text-lg font-semibold text-gray-500 mb-4">
+										First request a service to start a chat with the
+										professional
+									</h2>
+								) : (
+									<>
+										<ChatComponent
+											chatId={chatId}
+											currentUserId="0x1234567890abcdef1234567890abcdef12345678"
+											secondUserId="0xabcdef1234567890abcdef1234567890abcdef12"
+										/>
+										{paymentRequest && (
+											<div className="mt-4 bg-white p-4 rounded-2xl shadow-2xl border broder-gray-200">
+												<h2 className="text-lg font-semibold text-orange-500 mb-2">
+													Payment Request
+												</h2>
+												<p className="text-gray-700 mb-3">
+													<span className="font-medium">
+														{paymentRequest.requester}
+													</span>{' '}
+													is requesting a payment of{' '}
+													<span className="font-medium">
+														{paymentRequest.amount} {paymentRequest.currency}
+													</span>
+												</p>
+												<div className="flex justify-end gap-3">
+													<button
+														className="btn btn-sm border-gray-300 hover:bg-gray-100"
+														onClick={() => setPaymentRequest(null)}
+													>
+														Decline
+													</button>
+													<button
+														onClick={
+															() =>
+																setPaymentRequest(
+																	null
+																) /* Payment processing would go here */
+														}
+														onClick={() => console.log('Payment accepted')}
+													>
+														Accept Payment
+													</button>
+												</div>
+											</div>
+										)}
+									</>
 								)}
 							</>
 						)}
