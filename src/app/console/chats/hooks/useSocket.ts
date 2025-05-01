@@ -17,7 +17,7 @@ export function useChatSocket(
 			return
 		}
 
-		const socketInstance = io('https://krnpm9qg-3000.use.devtunnels.ms/', {
+		const socketInstance = io('http://localhost:3000', {
 			query: {
 				chatID: chatId,
 				userID: currentUserId,
