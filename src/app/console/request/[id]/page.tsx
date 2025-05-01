@@ -188,13 +188,7 @@ export default function Chat(): JSX.Element {
 
 			sendMessage(initialMessage)
 		}
-	}, [
-		projectDetails,
-		socket,
-		requestChat,
-		professional?.address,
-		professional?.name
-	])
+	}, [projectDetails, socket, requestChat, professional?.name, sendMessage])
 
 	if (
 		checkingMiniPay ||
@@ -438,7 +432,6 @@ export default function Chat(): JSX.Element {
 																	null
 																) /* Payment processing would go here */
 														}
-														onClick={() => console.log('Payment accepted')}
 													>
 														Accept Payment
 													</button>

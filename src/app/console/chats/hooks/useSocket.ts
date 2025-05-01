@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 
 import { ChatMessage } from '../../chats/interfaces/chat'
@@ -7,7 +7,7 @@ export function useChatSocket(
 	chatId: string,
 	currentUserId: string,
 	secondUserId: string
-) {
+): JSX.Element {
 	const [socket, setSocket] = useState<Socket | null>(null)
 	const [messages, setMessages] = useState<ChatMessage[]>([])
 
@@ -35,12 +35,12 @@ export function useChatSocket(
 			setMessages(prev => [...prev, message])
 		})
 
-		return () => {
+		return (): void => {
 			socketInstance.disconnect()
 		}
 	}, [chatId, currentUserId, secondUserId])
 
-	const sendMessage = (text: string) => {
+	const sendMessage = (text: string): void => {
 		if (text.trim() === '' || !socket) return
 		socket.emit('send_message', { text })
 	}

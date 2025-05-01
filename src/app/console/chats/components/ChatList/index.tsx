@@ -42,12 +42,12 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 			socket.emit('list_chats')
 		})
 
-		return () => {
+		return (): void => {
 			if (socket) socket.disconnect()
 		}
 	}, [currentUserId])
 
-	const getSecondUserId = (chat: ChatSummary) => {
+	const getSecondUserId = (chat: ChatSummary): string => {
 		const account = chat.accounts[0]
 		return account.primaryUser === currentUserId
 			? account.secondaryUser

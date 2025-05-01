@@ -51,7 +51,7 @@ export default function Modal(props: Props): JSX.Element {
 	// services
 	const { addOpinion } = professionalsService()
 
-	const { mutateAsync, isPending, error } = useMutation({
+	const { mutateAsync, isPending } = useMutation({
 		mutationFn: (opinion: OpinionDto) =>
 			addOpinion(selectedProfessional.id || '', opinion),
 

@@ -6,9 +6,9 @@ Global Stablecoin Hackathon
 
 xxx
 
-### My Partner - backend:
+### My Partner - websocket:
 
-xxx
+https://github.com/LeoRami99/socket-chat
 
 ## Quick start 🏄
 

@@ -30,7 +30,7 @@ export default function OpinionsSection(props: Props): JSX.Element {
 		)
 
 		return { average: avg, distribution: dist }
-	}, [])
+	}, [professional.opinions])
 
 	return (
 		<section className="flex flex-col space-y-6 w-full text-gray-600">
