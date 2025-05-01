@@ -28,7 +28,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 			return
 		}
 
-		socket = io('https://krnpm9qg-3000.use.devtunnels.ms/', {
+		socket = io('http://localhost:3000', {
 			query: { userID: currentUserId }
 		})
 

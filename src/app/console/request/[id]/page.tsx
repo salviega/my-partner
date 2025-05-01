@@ -18,6 +18,7 @@ import Layout from '@/shared/Layout'
 import Modal from '@/shared/Modal'
 import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
+import { saveLocalStorage } from '@/utils/store.localstorage'
 
 import ChatComponent from '../../chats/components/Chat'
 import { useChatSocket } from '../../chats/hooks/useSocket'
@@ -84,8 +85,10 @@ export default function Chat(): JSX.Element {
 
 	const { socket } = useChatSocket(
 		requestChat || chatId !== '' ? chatId : '',
-		'0x1234567890abcdef1234567890abcdef12345678',
-		'0xabcdef1234567890abcdef1234567890abcdef12'
+		user?.address as string,
+		// the second user is dynamic and is the professional
+		//addres of the professional
+		professional?.address as string
 	)
 
 	useEffect(() => {
@@ -99,6 +102,7 @@ export default function Chat(): JSX.Element {
 
 						const accountList = accounts as Address[]
 						getUser(accountList[0])
+						console.log('accountList', accountList[0])
 						getProfessional(zeroAddress)
 					} catch (error) {
 						console.error('Error requesting accounts:', error)
@@ -132,13 +136,13 @@ export default function Chat(): JSX.Element {
 	}, [id, selectedProfessional, getSelectedProfessionalById])
 
 	//use effect para verificar si el chatId existe en el localStorage
-	// useEffect(() => {
-	// 	const storedChatId = localStorage.getItem('chatId')
-	// 	if (storedChatId) {
-	// 		setChatId(storedChatId)
-	// 		setRequestChat(true)
-	// 	}
-	// }, [])
+	useEffect(() => {
+		const storedChatId = localStorage.getItem('chatId')
+		if (storedChatId) {
+			setChatId(storedChatId)
+			setRequestChat(true)
+		}
+	}, [])
 
 	useEffect(() => {
 		socket?.on('payment_requested', data => {
@@ -150,51 +154,47 @@ export default function Chat(): JSX.Element {
 		}
 	}, [socket])
 
-	// const _handleRequestChat = (): void => {
-	// 	const uuid = crypto.randomUUID()
-	// 	setChatId(uuid)
-	// 	setRequestChat(true)
-	// 	saveLocalStorage('chatId', uuid)
-	// }
+	const [projectDetails, setProjectDetails] = useState<Form | null>(null)
 
 	const onSubmit = async (data: Form): Promise<void> => {
 		try {
-			console.log('data', data)
-
-			/*
-				Hello profesional.name! 👋
-				I want to quote you for a job I need done:
-				reques.title
-				reques.description
-				I need it done by reques.starDate
-				I live in reques.addressClient
-
-				How much would it cost?
-				Thanks!
-			---------------------------
-
-			To Do
-
-			Si el chat no ha sido respondido por el profesional aparece
-			un alerta de esperando respuesta
-
-
-			formulario all stablecoins y seleccionar el metodo de pago.
-
-
-			el profesional cuando pide el monto debe digitar el monto
-			/get-pay 200 cCOP
-
-
-			y al cliente se le vera una interfaz para aceptar o rechazar el pago.
-
-			el cliente puede ver el monto y el metodo de pago
-
-			*/
+			setRequestChat(true)
+			const fullChatId = `${professional?.address}-${user?.address}`
+			saveLocalStorage('chatId', fullChatId)
+			setChatId(fullChatId)
+			setProjectDetails(data)
 		} catch (error) {
 			toast.error(`Error: ${handleError(error)}`)
 		}
 	}
+	const { sendMessage } = useChatSocket(
+		chatId,
+		user?.address as string,
+		professional?.address as string
+	)
+	useEffect(() => {
+		if (projectDetails && socket && requestChat) {
+			const initialMessage = `
+      Hello ${professional?.name}! 👋
+      I want to quote you for a job I need done:
+
+      Project: ${projectDetails.projectTitle}
+      Description: ${projectDetails.projectDescription}
+      Category: ${projectDetails.category}
+
+      How much would it cost?
+      Thanks!
+      `.trim()
+
+			sendMessage(initialMessage)
+		}
+	}, [
+		projectDetails,
+		socket,
+		requestChat,
+		professional?.address,
+		professional?.name
+	])
 
 	if (
 		checkingMiniPay ||
@@ -406,9 +406,9 @@ export default function Chat(): JSX.Element {
 								) : (
 									<>
 										<ChatComponent
-											chatId={chatId}
-											currentUserId="0x1234567890abcdef1234567890abcdef12345678"
-											secondUserId="0xabcdef1234567890abcdef1234567890abcdef12"
+											chatId={`${professional?.address}-${user?.address}`}
+											currentUserId={user?.address as string}
+											secondUserId={professional?.address as string}
 										/>
 										{paymentRequest && (
 											<div className="mt-4 bg-white p-4 rounded-2xl shadow-2xl border broder-gray-200">
