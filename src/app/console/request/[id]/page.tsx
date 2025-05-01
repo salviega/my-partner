@@ -10,8 +10,9 @@ import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
-import { DESCRIPTION_MAX } from '@/constants'
+import { DESCRIPTION_MAX, stablecoins } from '@/constants'
 import { handleError } from '@/helpers'
+import { Stablecoin } from '@/models'
 import Announcement from '@/shared/Announcement'
 import Layout from '@/shared/Layout'
 import Modal from '@/shared/Modal'
@@ -355,6 +356,29 @@ export default function Chat(): JSX.Element {
 					{selectedProfessional && (
 						<Modal selectedProfessional={selectedProfessional} />
 					)}
+					<div className="dropdown dropdown-bottom">
+						<div tabIndex={0} role="button" className="btn m-1">
+							Select coin ⬇️
+						</div>
+						<ul
+							tabIndex={0}
+							className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm h-80 overflow-y-auto"
+						>
+							{stablecoins.map((stablecoin: Stablecoin, index: number) => (
+								<li key={index}>
+									<a>
+										<Image
+											src={stablecoin.icon}
+											alt={stablecoin.name}
+											width={24}
+											height={24}
+										></Image>
+										{stablecoin.name}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
 					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
 						{isSubmitting ? (
 							<div className="flex items-center justify-center h-full">

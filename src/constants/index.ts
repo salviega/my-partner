@@ -1,8 +1,51 @@
+import cAUD from '@/assets/images/stablecoins/cAUD.svg'
+import cCAD from '@/assets/images/stablecoins/cCAD.svg'
+import cCHF from '@/assets/images/stablecoins/cCHF.svg'
+import cCOP from '@/assets/images/stablecoins/cCOP.svg'
+import cEUR from '@/assets/images/stablecoins/cEUR.svg'
+import cGBP from '@/assets/images/stablecoins/cGBP.svg'
+import cGHS from '@/assets/images/stablecoins/cGHS.svg'
+import cJPY from '@/assets/images/stablecoins/cJPY.svg'
+import cKES from '@/assets/images/stablecoins/cKES.svg'
+import cNGN from '@/assets/images/stablecoins/cNGN.svg'
+import cREAL from '@/assets/images/stablecoins/cREAL.svg'
+import cUSD from '@/assets/images/stablecoins/cUSD.svg'
+import cZAR from '@/assets/images/stablecoins/cZAR.svg'
+import eXOF from '@/assets/images/stablecoins/eXOF.svg'
+import PUSO from '@/assets/images/stablecoins/PUSO.svg'
+import USDC from '@/assets/images/stablecoins/USDC.svg'
+import USDT from '@/assets/images/stablecoins/USDT.svg'
 import sowsInTheWorld from '@/assets/lottie/sows-in-the-world.json'
 import worldRaisedHands from '@/assets/lottie/world-raised-hands.json'
 
 import minipayLogo from '../assets/images/minipay-logo.svg'
-import { Category, Opinion, Professional, Subrubro } from '../models'
+import {
+	Category,
+	Opinion,
+	Professional,
+	Stablecoin,
+	Subrubro
+} from '../models'
+
+export const stablecoins: Stablecoin[] = [
+	{ icon: cAUD, name: 'Celo Australian Dollar (cAUD)' },
+	{ icon: cCAD, name: 'Celo Canadian Dollar (cCAD)' },
+	{ icon: cCHF, name: 'Celo Swiss Franc (cCHF)' },
+	{ icon: cCOP, name: 'Celo Colombian Peso (cCOP)' },
+	{ icon: cEUR, name: 'Celo Euro (cEUR)' },
+	{ icon: cGBP, name: 'Celo British Pound (cGBP)' },
+	{ icon: cGHS, name: 'Celo Ghanaian Cedi (cGHS)' },
+	{ icon: cJPY, name: 'Celo Japanese Yen (cJPY)' },
+	{ icon: cKES, name: 'Celo Kenyan Shilling (cKES)' },
+	{ icon: cNGN, name: 'Celo Nigerian Naira (cNGN)' },
+	{ icon: cREAL, name: 'Celo Brazilian Real (cREAL)' },
+	{ icon: cUSD, name: 'Celo Dollar (cUSD)' },
+	{ icon: cZAR, name: 'Celo South African Rand (cZAR)' },
+	{ icon: eXOF, name: 'Celo CFA Franc BCEAO (eXOF)' },
+	{ icon: PUSO, name: 'Celo Philippine Peso (PUSO)' },
+	{ icon: USDC, name: 'USD Coin (USDC)' },
+	{ icon: USDT, name: 'Tether USD (USDT)' }
+]
 
 export const categories: Category[] = [
 	{
