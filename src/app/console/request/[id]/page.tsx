@@ -10,7 +10,7 @@ import { Address, zeroAddress } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
-import { DESCRIPTION_MAX, stablecoins } from '@/constants'
+import { DESCRIPTION_MAX, IMAGES, stablecoins } from '@/constants'
 import { handleError } from '@/helpers'
 import { Stablecoin } from '@/models'
 import Announcement from '@/shared/Announcement'
@@ -224,6 +224,7 @@ export default function Chat(): JSX.Element {
 						className="flex flex-col space-y-4 border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md w-full h-full"
 					>
 						{/* Profesional info */}
+
 						{selectedProfessional && (
 							<div className="flex flex-col items-center space-y-4 w-full">
 								<h2 className="text-xl font-semibold text-orange-500">
@@ -350,9 +351,20 @@ export default function Chat(): JSX.Element {
 				)}
 
 				<div className="flex-1 h-auto border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md">
-					<h2 className="text-xl font-semibold text-orange-500 mb-4">
-						Chat with Professional
-					</h2>
+					<div className="flex justify-between items-center mb-4 w-full">
+						<h2 className="text-xl font-semibold text-orange-500">
+							Chat with Professional
+						</h2>
+						<a href="https://app.mento.org/" target="_blank" rel="noreferrer">
+							<Image
+								src={IMAGES['mentoLogo']}
+								alt="Mento"
+								width={50}
+								height={50}
+							/>
+						</a>
+					</div>
+
 					{selectedProfessional && (
 						<Modal selectedProfessional={selectedProfessional} />
 					)}

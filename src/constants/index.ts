@@ -18,6 +18,7 @@ import USDT from '@/assets/images/stablecoins/USDT.svg'
 import sowsInTheWorld from '@/assets/lottie/sows-in-the-world.json'
 import worldRaisedHands from '@/assets/lottie/world-raised-hands.json'
 
+import mentoLogo from '../assets/images/mento-logo.avif'
 import minipayLogo from '../assets/images/minipay-logo.svg'
 import {
 	Category,
@@ -396,7 +397,8 @@ export const ANIMATIONS = {
 }
 
 export const IMAGES = {
-	'minipay-logo': minipayLogo
+	'minipay-logo': minipayLogo,
+	mentoLogo: mentoLogo
 }
 
 // Form constants
