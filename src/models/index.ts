@@ -3,6 +3,8 @@ import { Address } from 'viem'
 export interface Stablecoin {
 	icon: string
 	name: string
+	proxy: Address
+	implementation: Address
 }
 
 export interface Category {

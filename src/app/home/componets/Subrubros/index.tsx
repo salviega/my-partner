@@ -7,16 +7,16 @@ import { categories } from '@/constants'
 import { Category } from '@/models'
 
 type Props = {
-	subrubros: string[]
+	subrubros: Category[]
 }
 
 export default function Subrubros(props: Props): JSX.Element {
 	const { subrubros } = props
 
 	const selectedCategory: (Category | undefined)[] = subrubros.map(
-		(subrubro: string) => {
+		(subrubro: Category) => {
 			const category = categories.find(
-				(category: { title: string }) => category.title === subrubro
+				(category: { title: string }) => category.title === subrubro.title
 			)
 			return category
 		}

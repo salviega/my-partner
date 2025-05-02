@@ -12,7 +12,8 @@ import { z } from 'zod'
 import StarRating from '@/app/console/chats/components/StartRating'
 import { DESCRIPTION_MAX } from '@/constants'
 import { handleError } from '@/helpers'
-import { OpinionDto, Professional } from '@/models'
+import { OpinionDto, Professional, Stablecoin } from '@/models'
+import { sendToken } from '@/services/blockchain/mento'
 import { professionalsService } from '@/services/firebase/professionls'
 import { useStore } from '@/store'
 
@@ -27,11 +28,13 @@ const schema = z.object({
 type Form = z.infer<typeof schema>
 
 type Props = {
+	amount: string
 	selectedProfessional: Professional
+	selectedStablecoin: Stablecoin
 }
 
 export default function Modal(props: Props): JSX.Element {
-	const { selectedProfessional } = props
+	const { amount, selectedProfessional, selectedStablecoin } = props
 
 	// form
 	const {
@@ -74,14 +77,26 @@ export default function Modal(props: Props): JSX.Element {
 	const router = useRouter()
 	const [rating, setRating] = useState<number>(selectedProfessional.stars)
 	const modalRef = useRef<HTMLDialogElement>(null)
+	const [sending, setSending] = useState<boolean>(false)
 
-	const openModal = (): void => {
-		if (!modalRef.current) {
-			console.error('dialog ref is null')
-			return
+	const openModal = async () => {
+		if (sending) return
+		setSending(true)
+
+		try {
+			const receipt = await sendToken(
+				selectedStablecoin,
+				selectedProfessional.address,
+				amount
+			)
+
+			toast.success(`Tx hash: ${receipt.transactionHash.slice(0, 10)}…`)
+			modalRef.current?.showModal()
+		} catch (err) {
+			toast.error(handleError(err))
+		} finally {
+			setSending(false)
 		}
-
-		modalRef.current.showModal()
 	}
 
 	const onSubmit = async (data: Form): Promise<void> => {
@@ -103,7 +118,7 @@ export default function Modal(props: Props): JSX.Element {
 	return (
 		<>
 			<button className="btn" onClick={openModal}>
-				open modal
+				{sending ? 'Sending...' : `Calify`}
 			</button>
 
 			{/* Attach the ref here */}

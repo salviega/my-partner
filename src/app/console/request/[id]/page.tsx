@@ -70,6 +70,7 @@ export default function Chat(): JSX.Element {
 	const [chatId, setChatId] = useState<string>('')
 	const [checkingMiniPay, setCheckingMiniPay] = useState<boolean>(true)
 	const [requestChat, setRequestChat] = useState<boolean>(false)
+	const [selectedToken, setSelectedToken] = useState<Stablecoin | null>(null)
 
 	const [paymentRequest, setPaymentRequest] = useState<{
 		amount: string
@@ -201,6 +202,13 @@ export default function Chat(): JSX.Element {
 				<Spinner />
 			</div>
 		)
+
+	const handleSelectToken = (token: Stablecoin): void => {
+		setSelectedToken(token)
+		if (document.activeElement instanceof HTMLElement) {
+			document.activeElement.blur()
+		}
+	}
 
 	// if (!isSettingUser && !user) return <Announcement />
 
@@ -359,30 +367,55 @@ export default function Chat(): JSX.Element {
 						</a>
 					</div>
 
-					{selectedProfessional && (
-						<Modal selectedProfessional={selectedProfessional} />
+					{selectedProfessional && selectedToken && (
+						<Modal
+							amount="1"
+							selectedStablecoin={selectedToken}
+							selectedProfessional={selectedProfessional}
+						/>
 					)}
+
 					<div className="dropdown dropdown-bottom">
-						<div tabIndex={0} role="button" className="btn m-1">
-							Select coin ⬇️
+						<div tabIndex={0} role="button" className="btn flex items-center">
+							{selectedToken ? (
+								<>
+									<Image
+										src={selectedToken.icon}
+										alt={selectedToken.name}
+										width={24}
+										height={24}
+									/>
+									{selectedToken.name}
+								</>
+							) : (
+								'Select coin ⬇️'
+							)}
 						</div>
+
 						<ul
 							tabIndex={0}
 							className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm h-80 overflow-y-auto"
 						>
-							{stablecoins.map((stablecoin: Stablecoin, index: number) => (
-								<li key={index}>
-									<a>
-										<Image
-											src={stablecoin.icon}
-											alt={stablecoin.name}
-											width={24}
-											height={24}
-										></Image>
-										{stablecoin.name}
-									</a>
-								</li>
-							))}
+							{stablecoins.map((stablecoin: Stablecoin, index: number) => {
+								const disabled: boolean = stablecoin.proxy === zeroAddress
+								return (
+									<li key={index}>
+										<a
+											onClick={() => !disabled && handleSelectToken(stablecoin)}
+											className={`${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+											tabIndex={disabled ? -1 : 0}
+										>
+											<Image
+												src={stablecoin.icon}
+												alt={stablecoin.name}
+												width={24}
+												height={24}
+											/>
+											{stablecoin.name}
+										</a>
+									</li>
+								)
+							})}
 						</ul>
 					</div>
 					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">

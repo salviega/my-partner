@@ -29,23 +29,108 @@ import {
 } from '../models'
 
 export const stablecoins: Stablecoin[] = [
-	{ icon: cAUD, name: 'Celo Australian Dollar (cAUD)' },
-	{ icon: cCAD, name: 'Celo Canadian Dollar (cCAD)' },
-	{ icon: cCHF, name: 'Celo Swiss Franc (cCHF)' },
-	{ icon: cCOP, name: 'Celo Colombian Peso (cCOP)' },
-	{ icon: cEUR, name: 'Celo Euro (cEUR)' },
-	{ icon: cGBP, name: 'Celo British Pound (cGBP)' },
-	{ icon: cGHS, name: 'Celo Ghanaian Cedi (cGHS)' },
-	{ icon: cJPY, name: 'Celo Japanese Yen (cJPY)' },
-	{ icon: cKES, name: 'Celo Kenyan Shilling (cKES)' },
-	{ icon: cNGN, name: 'Celo Nigerian Naira (cNGN)' },
-	{ icon: cREAL, name: 'Celo Brazilian Real (cREAL)' },
-	{ icon: cUSD, name: 'Celo Dollar (cUSD)' },
-	{ icon: cZAR, name: 'Celo South African Rand (cZAR)' },
-	{ icon: eXOF, name: 'Celo CFA Franc BCEAO (eXOF)' },
-	{ icon: PUSO, name: 'Celo Philippine Peso (PUSO)' },
-	{ icon: USDC, name: 'USD Coin (USDC)' },
-	{ icon: USDT, name: 'Tether USD (USDT)' }
+	{
+		icon: cAUD,
+		name: 'Celo Australian Dollar (cAUD)',
+		proxy: '0x7175504C455076F15c04A2F90a8e352281F492F9',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cCAD,
+		name: 'Celo Canadian Dollar (cCAD)',
+		proxy: '0xff4Ab19391af240c311c54200a492233052B6325',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cCHF,
+		name: 'Celo Swiss Franc (cCHF)',
+		proxy: '0x0000000000000000000000000000000000000000',
+		implementation: '0x0000000000000000000000000000000000000000'
+	},
+	{
+		icon: cCOP,
+		name: 'Celo Colombian Peso (cCOP)',
+		proxy: '0x8a567e2ae79ca692bd748ab832081c45de4041ea',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cEUR,
+		name: 'Celo Euro (cEUR)',
+		proxy: '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cGBP,
+		name: 'Celo British Pound (cGBP)',
+		proxy: '0xCCF663b1fF11028f0b19058d0f7B674004a40746',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cGHS,
+		name: 'Celo Ghanaian Cedi (cGHS)',
+		proxy: '0xfAeA5F3404bbA20D3cc2f8C4B0A888F55a3c7313',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cJPY,
+		name: 'Celo Japanese Yen (cJPY)',
+		proxy: '0x0000000000000000000000000000000000000000',
+		implementation: '0x0000000000000000000000000000000000000000'
+	},
+	{
+		icon: cKES,
+		name: 'Celo Kenyan Shilling (cKES)',
+		proxy: '0x456a3D042C0DbD3db53D5489e98dFb038553B0d0',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cNGN,
+		name: 'Celo Nigerian Naira (cNGN)',
+		proxy: '0x0000000000000000000000000000000000000000',
+		implementation: '0x0000000000000000000000000000000000000000'
+	},
+	{
+		icon: cREAL,
+		name: 'Celo Brazilian Real (cREAL)',
+		proxy: '0xe8537a3d056da446677b9e9d6c5db704eaab4787',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: cUSD,
+		name: 'Celo Dollar (cUSD)',
+		proxy: '0x0000000000000000000000000000000000000000',
+		implementation: '0x0000000000000000000000000000000000000000'
+	},
+	{
+		icon: cZAR,
+		name: 'Celo South African Rand (cZAR)',
+		proxy: '0x4c35853A3B4e647fD266f4de678dCc8fEC410BF6',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: eXOF,
+		name: 'Celo CFA Franc BCEAO (eXOF)',
+		proxy: '0x73F93dcc49cB8A239e2032663e9475dd5ef29A08',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: PUSO,
+		name: 'Celo Philippine Peso (PUSO)',
+		proxy: '0x105d4A9306D2E55a71d2Eb95B81553AE1dC20d7B',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
+	},
+	{
+		icon: USDC,
+		name: 'USD Coin (USDC)',
+		proxy: '0x0000000000000000000000000000000000000000',
+		implementation: '0x0000000000000000000000000000000000000000'
+	},
+	{
+		icon: USDT,
+		name: 'Tether USD (USDT)',
+		proxy: '0x0000000000000000000000000000000000000000',
+		implementation: '0x0000000000000000000000000000000000000000'
+	}
 ]
 
 export const categories: Category[] = [
@@ -413,4 +498,227 @@ export const VALID_FILE_TYPES: string[] = [
 	'image/png',
 	'image/gif',
 	'image/svg+xml'
+]
+
+export const ERC20_ABI = [
+	{
+		constant: true,
+		inputs: [],
+		name: 'name',
+		outputs: [
+			{
+				name: '',
+				type: 'string'
+			}
+		],
+		payable: false,
+		stateMutability: 'view',
+		type: 'function'
+	},
+	{
+		constant: false,
+		inputs: [
+			{
+				name: '_spender',
+				type: 'address'
+			},
+			{
+				name: '_value',
+				type: 'uint256'
+			}
+		],
+		name: 'approve',
+		outputs: [
+			{
+				name: '',
+				type: 'bool'
+			}
+		],
+		payable: false,
+		stateMutability: 'nonpayable',
+		type: 'function'
+	},
+	{
+		constant: true,
+		inputs: [],
+		name: 'totalSupply',
+		outputs: [
+			{
+				name: '',
+				type: 'uint256'
+			}
+		],
+		payable: false,
+		stateMutability: 'view',
+		type: 'function'
+	},
+	{
+		constant: false,
+		inputs: [
+			{
+				name: '_from',
+				type: 'address'
+			},
+			{
+				name: '_to',
+				type: 'address'
+			},
+			{
+				name: '_value',
+				type: 'uint256'
+			}
+		],
+		name: 'transferFrom',
+		outputs: [
+			{
+				name: '',
+				type: 'bool'
+			}
+		],
+		payable: false,
+		stateMutability: 'nonpayable',
+		type: 'function'
+	},
+	{
+		constant: true,
+		inputs: [],
+		name: 'decimals',
+		outputs: [
+			{
+				name: '',
+				type: 'uint8'
+			}
+		],
+		payable: false,
+		stateMutability: 'view',
+		type: 'function'
+	},
+	{
+		constant: true,
+		inputs: [
+			{
+				name: '_owner',
+				type: 'address'
+			}
+		],
+		name: 'balanceOf',
+		outputs: [
+			{
+				name: 'balance',
+				type: 'uint256'
+			}
+		],
+		payable: false,
+		stateMutability: 'view',
+		type: 'function'
+	},
+	{
+		constant: true,
+		inputs: [],
+		name: 'symbol',
+		outputs: [
+			{
+				name: '',
+				type: 'string'
+			}
+		],
+		payable: false,
+		stateMutability: 'view',
+		type: 'function'
+	},
+	{
+		constant: false,
+		inputs: [
+			{
+				name: '_to',
+				type: 'address'
+			},
+			{
+				name: '_value',
+				type: 'uint256'
+			}
+		],
+		name: 'transfer',
+		outputs: [
+			{
+				name: '',
+				type: 'bool'
+			}
+		],
+		payable: false,
+		stateMutability: 'nonpayable',
+		type: 'function'
+	},
+	{
+		constant: true,
+		inputs: [
+			{
+				name: '_owner',
+				type: 'address'
+			},
+			{
+				name: '_spender',
+				type: 'address'
+			}
+		],
+		name: 'allowance',
+		outputs: [
+			{
+				name: '',
+				type: 'uint256'
+			}
+		],
+		payable: false,
+		stateMutability: 'view',
+		type: 'function'
+	},
+	{
+		payable: true,
+		stateMutability: 'payable',
+		type: 'fallback'
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				name: 'owner',
+				type: 'address'
+			},
+			{
+				indexed: true,
+				name: 'spender',
+				type: 'address'
+			},
+			{
+				indexed: false,
+				name: 'value',
+				type: 'uint256'
+			}
+		],
+		name: 'Approval',
+		type: 'event'
+	},
+	{
+		anonymous: false,
+		inputs: [
+			{
+				indexed: true,
+				name: 'from',
+				type: 'address'
+			},
+			{
+				indexed: true,
+				name: 'to',
+				type: 'address'
+			},
+			{
+				indexed: false,
+				name: 'value',
+				type: 'uint256'
+			}
+		],
+		name: 'Transfer',
+		type: 'event'
+	}
 ]
