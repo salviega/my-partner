@@ -35,12 +35,12 @@ export function useChatSocket(
 			setMessages(prev => [...prev, message])
 		})
 
-		return () => {
+		return (): void => {
 			socketInstance.disconnect()
 		}
 	}, [chatId, currentUserId, secondUserId])
 
-	const sendMessage = (text: string) => {
+	const sendMessage = (text: string): void => {
 		if (text.trim() === '' || !socket) return
 		socket.emit('send_message', { text })
 	}
