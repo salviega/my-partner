@@ -54,7 +54,7 @@ export const useStore = create<Store>(set => ({
 	selectedProfessional: null,
 	user: null,
 
-	destroyStore: () => {
+	destroyStore: (): void => {
 		set({
 			address: null,
 			isAddressSeted: false,

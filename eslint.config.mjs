@@ -45,7 +45,7 @@ export default tseslint.config(
 		rules: {
 			/* Basic best practices */
 			eqeqeq: ['warn', 'always'],
-			'no-console': 'warn',
+			// 'no-console': 'warn',
 
 			/* TypeScript */
 			'@typescript-eslint/explicit-function-return-type': 'warn',

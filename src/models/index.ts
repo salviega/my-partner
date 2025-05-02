@@ -1,5 +1,10 @@
 import { Address } from 'viem'
 
+export interface Stablecoin {
+	icon: string
+	name: string
+}
+
 export interface Category {
 	title: string
 	href: string

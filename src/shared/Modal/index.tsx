@@ -51,7 +51,7 @@ export default function Modal(props: Props): JSX.Element {
 	// services
 	const { addOpinion } = professionalsService()
 
-	const { mutateAsync, isPending, error } = useMutation({
+	const { mutateAsync, isPending } = useMutation({
 		mutationFn: (opinion: OpinionDto) =>
 			addOpinion(selectedProfessional.id || '', opinion),
 
@@ -154,7 +154,7 @@ export default function Modal(props: Props): JSX.Element {
 								<div className="w-full">
 									<textarea
 										rows={4}
-										placeholder="Project description"
+										placeholder="Commentary"
 										{...register('comment')}
 										className="textarea textarea-bordered w-full"
 										disabled={isSubmitting}

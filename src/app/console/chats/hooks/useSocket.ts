@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 
 import { ChatMessage } from '../../chats/interfaces/chat'
@@ -7,7 +7,7 @@ export function useChatSocket(
 	chatId: string,
 	currentUserId: string,
 	secondUserId: string
-) {
+): JSX.Element {
 	const [socket, setSocket] = useState<Socket | null>(null)
 	const [messages, setMessages] = useState<ChatMessage[]>([])
 
