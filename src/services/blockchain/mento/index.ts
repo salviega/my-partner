@@ -28,14 +28,12 @@ export async function sendToken(
 	const [account] = await walletClient.getAddresses()
 	if (!account) throw new Error('Wallet not connected')
 
-	// const amountWei = parseEther(amount)
-
 	/* 1️⃣  Estimas el gas para la llamada transfer() */
 	const gasLimit = await publicClient.estimateContractGas({
 		address: stableToken.proxy,
 		abi: ERC20_ABI,
 		functionName: 'transfer',
-		args: ['0x7Db67b92794e2569DAB6A2E38D877900F8883350', '1'],
+		args: [to, amount],
 		account
 	})
 
@@ -44,7 +42,7 @@ export async function sendToken(
 		address: stableToken.proxy,
 		abi: ERC20_ABI,
 		functionName: 'transfer',
-		args: ['0x7Db67b92794e2569DAB6A2E38D877900F8883350', '1'],
+		args: [to, amount],
 		account,
 		gas: gasLimit, // ← gas limit ya calculado
 		feeCurrency: stableToken.proxy
