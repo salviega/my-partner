@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { JSX, useEffect, useState } from 'react'
+import { JSX, use, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { Address, zeroAddress } from 'viem'
@@ -104,7 +104,7 @@ export default function Chat(): JSX.Element {
 						const accountList = accounts as Address[]
 						getUser(accountList[0])
 						console.log('accountList', accountList[0])
-						getProfessional(zeroAddress)
+						getProfessional(accountList[0])
 					} catch (error) {
 						console.error('Error requesting accounts:', error)
 					}
@@ -116,8 +116,8 @@ export default function Chat(): JSX.Element {
 			}
 
 			// Hardcoded address for testing
-			getUser(zeroAddress)
-			getProfessional(zeroAddress)
+			// getUser(zeroAddress)
+			// getProfessional(zeroAddress)
 
 			setCheckingMiniPay(false)
 		}
@@ -154,6 +154,13 @@ export default function Chat(): JSX.Element {
 			socket?.off('payment_requested')
 		}
 	}, [socket])
+	useEffect(() => {
+		setSelectedToken(
+			stablecoins.find(
+				stablecoin => stablecoin.name === paymentRequest?.currency
+			) || null
+		)
+	}, [paymentRequest])
 
 	const [projectDetails, setProjectDetails] = useState<Form | null>(null)
 
