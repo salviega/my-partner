@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { JSX, use, useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 import { Address, zeroAddress } from 'viem'
@@ -18,7 +18,7 @@ import Layout from '@/shared/Layout'
 import Modal from '@/shared/Modal'
 import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
-import { saveLocalStorage } from '@/utils/store.localstorage'
+import { usePaymentRequestStore } from '@/store/usePaymenRequest'
 
 import ChatComponent from '../../chats/components/Chat'
 import { useChatSocket } from '../../chats/hooks/useSocket'
@@ -34,6 +34,7 @@ const schema = z.object({
 type Form = z.infer<typeof schema>
 
 export default function Chat(): JSX.Element {
+	const { paymentRequest, clearPaymentRequest } = usePaymentRequestStore()
 	const {
 		register,
 		handleSubmit,
@@ -72,24 +73,24 @@ export default function Chat(): JSX.Element {
 	const [requestChat, setRequestChat] = useState<boolean>(false)
 	const [selectedToken, setSelectedToken] = useState<Stablecoin | null>(null)
 
-	const [paymentRequest, setPaymentRequest] = useState<{
-		amount: string
-		currency: string
-		requester: string
-	} | null>(null)
+	// const [paymentRequest, setPaymentRequest] = useState<{
+	// 	amount: string
+	// 	currency: string
+	// 	requester: string
+	// } | null>(null)
 
 	const isSelected = (value: string): boolean => selectedCategory === value
 
 	const handleSelectCategory = (value: string): void => {
 		setValue('category', value, { shouldValidate: true })
 	}
+	const socketReady =
+		requestChat && chatId && selectedProfessional?.address && user?.address
 
-	const { socket } = useChatSocket(
-		requestChat || chatId !== '' ? chatId : '',
-		user?.address as string,
-		// the second user is dynamic and is the professional
-		//addres of the professional
-		professional?.address as string
+	const { sendMessage, deleteChat, socket } = useChatSocket(
+		socketReady ? chatId : '',
+		socketReady ? selectedProfessional?.address : '',
+		socketReady ? user?.address : ''
 	)
 
 	useEffect(() => {
@@ -103,6 +104,7 @@ export default function Chat(): JSX.Element {
 
 						const accountList = accounts as Address[]
 						getUser(accountList[0])
+						// alert(`accountList[0]: ${accountList[0]}`)
 						console.log('accountList', accountList[0])
 						getProfessional(accountList[0])
 					} catch (error) {
@@ -131,6 +133,31 @@ export default function Chat(): JSX.Element {
 	}, [professional, user, getProfessional, getUser])
 
 	useEffect(() => {
+		// If socket connection fails, clear localStorage and reset state
+		if (requestChat && socket === null && chatId !== '') {
+			const connectionTimeout = setTimeout(() => {
+				console.log(
+					'Failed to establish chat connection, clearing localStorage'
+				)
+				localStorage.removeItem('chatId')
+				setChatId('')
+				setRequestChat(false)
+				toast.error('Could not connect to chat. Please try again.')
+			}, 5000) // Give it 5 seconds to connect
+
+			return () => clearTimeout(connectionTimeout)
+		}
+	}, [requestChat, socket, chatId])
+
+	// You can also add this helper function somewhere in your component
+	const clearChatData = () => {
+		deleteChat()
+		// localStorage.removeItem('chatId')
+		// setChatId('')
+		// setRequestChat(false)
+	}
+
+	useEffect(() => {
 		if (!selectedProfessional && id && typeof id === 'string') {
 			getSelectedProfessionalById(id)
 		}
@@ -144,16 +171,27 @@ export default function Chat(): JSX.Element {
 			setRequestChat(true)
 		}
 	}, [])
+	// alert(`user address${user?.address}`)
+	// alert(`professional address${professional?.address}`)
 
-	useEffect(() => {
-		socket?.on('payment_requested', data => {
-			setPaymentRequest(data)
-		})
+	// useEffect(() => {
+	// 	if (!socket) return
 
-		return (): void => {
-			socket?.off('payment_requested')
-		}
-	}, [socket])
+	// 	const handlePaymentRequest = (data: {
+	// 		amount: string
+	// 		currency: string
+	// 		requester: string
+	// 	}): void => {
+	// 		console.log('🔔 Pago solicitado recibido:', data)
+	// 		setPaymentRequest(data)
+	// 	}
+
+	// 	socket.on('payment_requested', handlePaymentRequest)
+
+	// 	return (): void => {
+	// 		socket.off('payment_requested', handlePaymentRequest)
+	// 	}
+	// }, [socket])
 	useEffect(() => {
 		setSelectedToken(
 			stablecoins.find(
@@ -166,20 +204,19 @@ export default function Chat(): JSX.Element {
 
 	const onSubmit = async (data: Form): Promise<void> => {
 		try {
+			// obtener la info
+			if (!user || !selectedProfessional) {
+				toast.error('User or professional information missing')
+				return
+			}
 			setRequestChat(true)
-			const fullChatId = `${professional?.address}-${user?.address}`
-			saveLocalStorage('chatId', fullChatId)
-			setChatId(fullChatId)
+
 			setProjectDetails(data)
 		} catch (error) {
 			toast.error(`Error: ${handleError(error)}`)
 		}
 	}
-	const { sendMessage } = useChatSocket(
-		chatId,
-		user?.address as string,
-		professional?.address as string
-	)
+
 	useEffect(() => {
 		if (projectDetails && socket && requestChat) {
 			const initialMessage = `
@@ -195,10 +232,10 @@ export default function Chat(): JSX.Element {
       `.trim()
 			setTimeout(() => {
 				sendMessage(initialMessage)
-			}, 1000)
+			}, 5000)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [projectDetails, socket, requestChat])
+	}, [projectDetails, socket, requestChat, socketReady])
 
 	if (
 		checkingMiniPay ||
@@ -214,12 +251,6 @@ export default function Chat(): JSX.Element {
 
 	const handleSelectToken = (token: Stablecoin): void => {
 		setSelectedToken(token)
-		// if (
-		// 	typeof document !== 'undefined' &&
-		// 	document.activeElement instanceof HTMLElement
-		// ) {
-		// 	document.activeElement.blur()
-		// }
 	}
 
 	// if (!isSettingUser && !user) return <Announcement />
@@ -379,7 +410,7 @@ export default function Chat(): JSX.Element {
 						</a>
 					</div>
 
-					<div className="dropdown dropdown-bottom">
+					{/* <div className="dropdown dropdown-bottom">
 						<div tabIndex={0} role="button" className="btn flex items-center">
 							{selectedToken ? (
 								<>
@@ -421,7 +452,7 @@ export default function Chat(): JSX.Element {
 								)
 							})}
 						</ul>
-					</div>
+					</div> */}
 					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
 						{isSubmitting ? (
 							<div className="flex items-center justify-center h-full">
@@ -437,9 +468,12 @@ export default function Chat(): JSX.Element {
 								) : (
 									<>
 										<ChatComponent
-											chatId={`${professional?.address}-${user?.address}`}
-											currentUserId={user?.address as string}
-											secondUserId={professional?.address as string}
+											chatId={
+												chatId ||
+												`${selectedProfessional?.address}-${user?.address}`
+											}
+											currentUserId={selectedProfessional?.address as string}
+											secondUserId={user?.address as string}
 										/>
 										{paymentRequest && (
 											<div className="mt-4 bg-white p-4 rounded-2xl shadow-2xl border broder-gray-200">
@@ -458,7 +492,7 @@ export default function Chat(): JSX.Element {
 												<div className="flex justify-end gap-3">
 													<button
 														className="btn btn-sm border-gray-300 hover:bg-gray-100"
-														onClick={() => setPaymentRequest(null)}
+														onClick={() => clearPaymentRequest()}
 													>
 														Decline
 													</button>
@@ -474,6 +508,10 @@ export default function Chat(): JSX.Element {
 												</div>
 											</div>
 										)}
+
+										{/* <button onClick={clearChatData} className="btn btn-sm mt-4">
+											Cancel Chat
+										</button> */}
 									</>
 								)}
 							</>
