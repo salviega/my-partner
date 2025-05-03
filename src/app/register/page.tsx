@@ -128,7 +128,7 @@ export default function Register(): JSX.Element {
 
 						const accountList = accounts as Address[]
 						getUser(accountList[0])
-						getProfessionalByAddress(zeroAddress)
+						getProfessionalByAddress(accountList[0])
 					} catch (error) {
 						console.error('Error requesting accounts:', error)
 					}
@@ -140,8 +140,8 @@ export default function Register(): JSX.Element {
 			}
 
 			// Hardcoded address for testing
-			getUser(zeroAddress)
-			getProfessionalByAddress(zeroAddress)
+			// getUser(zeroAddress)
+			// getProfessionalByAddress(zeroAddress)
 
 			setCheckingMiniPay(false)
 		}
