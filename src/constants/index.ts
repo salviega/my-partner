@@ -98,8 +98,8 @@ export const stablecoins: Stablecoin[] = [
 	{
 		icon: cUSD,
 		name: 'Celo Dollar (cUSD)',
-		proxy: '0x0000000000000000000000000000000000000000',
-		implementation: '0x0000000000000000000000000000000000000000'
+		proxy: '0x765DE816845861e75A25fCA122bb6898B8B1282a',
+		implementation: '0x434563B0604BE100F04B7Ae485BcafE3c9D8850E'
 	},
 	{
 		icon: cZAR,

@@ -30,6 +30,7 @@ type Store = {
 	getProfessionalsByCategory: (category: string) => Promise<void>
 	getUser: (address: Address) => Promise<void>
 	setAddress: (address: Address) => void
+	setProfessional: (professional: Professional) => void
 	setSelectedProfessional: (professional: Professional) => void
 }
 
@@ -163,6 +164,10 @@ export const useStore = create<Store>(set => ({
 
 	setAddress(address: Address): void {
 		return set({ address, isAddressSeted: true })
+	},
+
+	setProfessional(professional: Professional): void {
+		return set({ professional, isProfessionalSeted: true })
 	},
 
 	setSelectedProfessional(selectedProfessional: Professional): void {
