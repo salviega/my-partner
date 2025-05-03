@@ -21,13 +21,16 @@ export function useChatSocket(
 			return
 		}
 
-		const socketInstance = io('http://localhost:3000', {
-			query: {
-				chatID: chatId,
-				userID: currentUserId,
-				secondIdUser: secondUserId
+		const socketInstance = io(
+			'https://hopes-kai-databases-graduation.trycloudflare.com',
+			{
+				query: {
+					chatID: chatId,
+					userID: currentUserId,
+					secondIdUser: secondUserId
+				}
 			}
-		})
+		)
 
 		setSocket(socketInstance)
 

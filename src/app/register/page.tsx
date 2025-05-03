@@ -8,7 +8,7 @@ import { debounce } from 'lodash'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { z } from 'zod'
 
 import {
@@ -81,9 +81,11 @@ export default function Register(): JSX.Element {
 		mutationFn: (professionalDto: ProfessionalDto) =>
 			saveProfessional(professionalDto),
 
-		onSuccess: (_data: Professional) => {
+		onSuccess: (professional: Professional) => {
+			setProfessional(professional)
 			toast.success('Professional registered successfully')
 			router.push('/console/chats')
+
 			reset()
 		},
 
@@ -98,6 +100,7 @@ export default function Register(): JSX.Element {
 	const isSettingProfessional = useStore(state => state.isSettingProfessional)
 	const professional = useStore(state => state.professional)
 	const user = useStore(state => state.user)
+	const setProfessional = useStore(state => state.setProfessional)
 
 	const getProfessionalByAddress = useStore(
 		state => state.getProfessionalByAddress
@@ -110,6 +113,7 @@ export default function Register(): JSX.Element {
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 	const [suggestions, setSuggestions] = useState<string[]>([])
 	const [showDropdown, setShowDropdown] = useState<boolean>(false)
+	const [currentAddress, setCurrentAddress] = useState<string>('')
 
 	// variables
 	const selectedCategories = watchCategories
@@ -129,6 +133,7 @@ export default function Register(): JSX.Element {
 						const accountList = accounts as Address[]
 						getUser(accountList[0])
 						getProfessionalByAddress(accountList[0])
+						setCurrentAddress(accountList[0])
 					} catch (error) {
 						console.error('Error requesting accounts:', error)
 					}
@@ -236,9 +241,8 @@ export default function Register(): JSX.Element {
 		try {
 			const { photo, ...rest } = data
 
-			const professionalAddress: Address = address
-				? address
-				: (zeroAddress as Address)
+			const professionalAddress: Address =
+				user?.address || (currentAddress as Address)
 
 			const photoUrl: string = await fileToBase64(photo[0])
 
