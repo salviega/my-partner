@@ -207,12 +207,12 @@ export default function Chat(): JSX.Element {
 
 	const handleSelectToken = (token: Stablecoin): void => {
 		setSelectedToken(token)
-		if (
-			typeof document !== 'undefined' &&
-			document.activeElement instanceof HTMLElement
-		) {
-			document.activeElement.blur()
-		}
+		// if (
+		// 	typeof document !== 'undefined' &&
+		// 	document.activeElement instanceof HTMLElement
+		// ) {
+		// 	document.activeElement.blur()
+		// }
 	}
 
 	// if (!isSettingUser && !user) return <Announcement />
@@ -372,14 +372,6 @@ export default function Chat(): JSX.Element {
 						</a>
 					</div>
 
-					{selectedProfessional && selectedToken && (
-						<Modal
-							amount="1"
-							selectedStablecoin={selectedToken}
-							selectedProfessional={selectedProfessional}
-						/>
-					)}
-
 					<div className="dropdown dropdown-bottom">
 						<div tabIndex={0} role="button" className="btn flex items-center">
 							{selectedToken ? (
@@ -463,16 +455,15 @@ export default function Chat(): JSX.Element {
 													>
 														Decline
 													</button>
-													<button
-														onClick={
-															() =>
-																setPaymentRequest(
-																	null
-																) /* Payment processing would go here */
-														}
-													>
-														Accept Payment
-													</button>
+													{selectedProfessional && selectedToken && (
+														<Modal
+															amount={
+																paymentRequest?.amount.toString() as string
+															}
+															selectedStablecoin={selectedToken}
+															selectedProfessional={selectedProfessional}
+														/>
+													)}
 												</div>
 											</div>
 										)}
