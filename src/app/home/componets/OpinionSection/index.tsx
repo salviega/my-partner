@@ -44,11 +44,8 @@ export default function OpinionsSection(props: Props): JSX.Element {
 				<div
 					className={`w-full sm:max-h-max overflow-y-auto space-y-6 ${professional.opinions.length === 0 ? 'h-0' : 'h-64'} `}
 				>
-					{professional.opinions.map((opinion: Opinion) => (
-						<article
-							key={opinion.id}
-							className="space-y-3 border-b pb-4 w-full"
-						>
+					{professional.opinions.map((opinion: Opinion, index: number) => (
+						<article key={index} className="space-y-3 border-b pb-4 w-full">
 							{/* avatar + autor + fecha + rating */}
 							<header className="flex items-start gap-3 w-full">
 								<div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
