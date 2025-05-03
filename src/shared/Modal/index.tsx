@@ -118,7 +118,20 @@ export default function Modal(props: Props): JSX.Element {
 	return (
 		<>
 			<button className="btn" onClick={openModal}>
-				{sending ? 'Sending...' : `Calify`}
+				{sending ? (
+					'Sending...'
+				) : (
+					<>
+						<span>{amount}</span>
+						<Image
+							src={selectedStablecoin.icon}
+							alt={selectedStablecoin.name}
+							width={24}
+							height={24}
+						/>
+						{selectedStablecoin.name}
+					</>
+				)}
 			</button>
 
 			{/* Attach the ref here */}
