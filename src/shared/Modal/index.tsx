@@ -149,7 +149,7 @@ export default function Modal(props: Props): JSX.Element {
 								disabled={isPending || isSubmitting}
 								className={`
                flex flex-col items-center space-y-6 w-full mx-auto p-6
-               
+
                ${isPending || isSubmitting ? 'bg-gray-100 opacity-50' : ''}
              `}
 							>
