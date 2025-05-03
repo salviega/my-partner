@@ -69,7 +69,7 @@ export default function OpinionsSection(props: Props): JSX.Element {
 								<div className="flex-1">
 									<div className="">
 										<a
-											href={`https://alfajores.celoscan.io/address/${opinion.author}`}
+											href={`https://celoscan.io/address/${opinion.author}`}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="text-sm text-gray-700 hover:text-orange-500 transition-colors"
