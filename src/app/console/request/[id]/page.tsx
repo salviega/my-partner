@@ -186,10 +186,12 @@ export default function Chat(): JSX.Element {
       How much would it cost?
       Thanks!
       `.trim()
-
-			sendMessage(initialMessage)
+			setTimeout(() => {
+				sendMessage(initialMessage)
+			}, 1000)
 		}
-	}, [projectDetails, socket, requestChat, professional?.name, sendMessage])
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [projectDetails, socket, requestChat])
 
 	if (
 		checkingMiniPay ||
@@ -205,7 +207,10 @@ export default function Chat(): JSX.Element {
 
 	const handleSelectToken = (token: Stablecoin): void => {
 		setSelectedToken(token)
-		if (document.activeElement instanceof HTMLElement) {
+		if (
+			typeof document !== 'undefined' &&
+			document.activeElement instanceof HTMLElement
+		) {
 			document.activeElement.blur()
 		}
 	}
