@@ -1,8 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import { JSX, useEffect, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 
+import { stablecoins } from '@/constants'
+import { Stablecoin } from '@/models'
 import Announcement from '@/shared/Announcement'
 import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
@@ -11,6 +14,8 @@ import ChatComponent from './components/Chat'
 import ChatListComponent from './components/ChatList'
 
 export default function Chats(): JSX.Element {
+	const [selectedToken, setSelectedToken] = useState<Stablecoin | null>(null)
+
 	// store
 	const isSettingProfessional = useStore(state => state.isSettingProfessional)
 
@@ -46,7 +51,7 @@ export default function Chats(): JSX.Element {
 
 						const accountList = accounts as Address[]
 						getUser(accountList[0])
-						getProfessional(zeroAddress)
+						getProfessional(accountList[0])
 					} catch (error) {
 						console.error('Error requesting accounts:', error)
 					}
@@ -58,8 +63,8 @@ export default function Chats(): JSX.Element {
 			}
 
 			// Hardcoded address for testing
-			getUser(zeroAddress)
-			getProfessional(zeroAddress)
+			// getUser(zeroAddress)
+			// getProfessional(zeroAddress)
 
 			setCheckingMiniPay(false)
 		}
@@ -78,6 +83,16 @@ export default function Chats(): JSX.Element {
 				<Spinner />
 			</div>
 		)
+
+	const handleSelectToken = (token: Stablecoin): void => {
+		setSelectedToken(token)
+		// if (
+		// 	typeof document !== 'undefined' &&
+		// 	document.activeElement instanceof HTMLElement
+		// ) {
+		// 	document.activeElement.blur()
+		// }
+	}
 
 	// if (!isSettingUser && !user) return <Announcement />
 
@@ -113,11 +128,60 @@ export default function Chats(): JSX.Element {
 				/>
 
 				<div className="bg-white shadow-md rounded-2xl p-4 flex-1">
+					<>
+						<div className="dropdown dropdown-bottom">
+							<div tabIndex={0} role="button" className="btn flex items-center">
+								{selectedToken ? (
+									<>
+										<Image
+											src={selectedToken.icon}
+											alt={selectedToken.name}
+											width={24}
+											height={24}
+										/>
+										{selectedToken.name}
+									</>
+								) : (
+									'Select coin ⬇️'
+								)}
+							</div>
+
+							<ul
+								tabIndex={0}
+								className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm h-80 overflow-y-auto"
+							>
+								{stablecoins.map((stablecoin: Stablecoin, index: number) => {
+									const disabled: boolean = stablecoin.proxy === zeroAddress
+									return (
+										<li key={index}>
+											<a
+												onClick={() =>
+													!disabled && handleSelectToken(stablecoin)
+												}
+												className={`${disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
+												tabIndex={disabled ? -1 : 0}
+											>
+												<Image
+													src={stablecoin.icon}
+													alt={stablecoin.name}
+													width={24}
+													height={24}
+												/>
+												{stablecoin.name}
+											</a>
+										</li>
+									)
+								})}
+							</ul>
+						</div>
+					</>
+
 					{currentChatId && currentUserId && secondUserId ? (
 						<ChatComponent
 							chatId={currentChatId}
 							currentUserId={currentUserId}
 							secondUserId={secondUserId}
+							token={selectedToken || undefined}
 						/>
 					) : (
 						<div className="flex items-center justify-center h-full">
