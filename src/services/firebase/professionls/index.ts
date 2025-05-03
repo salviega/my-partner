@@ -191,6 +191,7 @@ export function mapProfessionalDto(dto: ProfessionalDto): Professional {
 export function mapOpinionDto(dto: OpinionDto): Opinion {
 	return {
 		...dto,
+		date: dto.date || '', // Provide a default value for the required date property
 		createdAt: new Date(dto.createdAt).toLocaleDateString('en-US', {
 			day: '2-digit',
 			month: '2-digit',
