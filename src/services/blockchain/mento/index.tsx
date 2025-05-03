@@ -1,7 +1,9 @@
+'use client'
 import {
 	createPublicClient,
 	createWalletClient,
 	custom,
+	EIP1193Provider,
 	http,
 	TransactionReceipt
 } from 'viem'
@@ -15,9 +17,13 @@ const publicClient = createPublicClient({
 	transport: http()
 })
 
+// Check if ethereum provider exists
+if (typeof window === 'undefined' || !window.ethereum) {
+	console.error('Ethereum provider not found')
+}
 const walletClient = createWalletClient({
 	chain: celo,
-	transport: custom(window.ethereum)
+	transport: custom(window.ethereum as EIP1193Provider)
 })
 
 export async function sendToken(

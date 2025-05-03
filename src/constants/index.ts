@@ -300,34 +300,47 @@ export const categories: Category[] = [
 
 export const professionals: Professional[] = [
 	{
-		id: 1,
+		id: '1',
 		name: 'Zivilbau Ingeniería S.A.S.',
 		city: 'Bogotá',
 		stars: 5,
 		description:
-			'Empresa de ingeniería civil dedicada a proyectos desde su concepción hasta la ejecución. Experiencia en obras públicas y privadas.'
+			'Empresa de ingeniería civil dedicada a proyectos desde su concepción hasta la ejecución. Experiencia en obras públicas y privadas.',
+		photoUrl: 'https://dummyimage.com/80x80/eee/aaa.jpg&text=Zivilbau',
+		address: '0x1234567890abcdef1234567890abcdef12345678',
+		lastName: '',
+		categories: [],
+		opinions: []
 	},
 	{
-		id: 2,
+		id: '2',
 		name: 'Proyectos Eléctricos Andina',
 		city: 'Medellín',
 		stars: 4,
 		description:
-			'Especialistas en instalaciones eléctricas residenciales e industriales con más de 10 años de trayectoria.'
+			'Especialistas en instalaciones eléctricas residenciales e industriales con más de 10 años de trayectoria.',
+		address: '0xabcdef1234567890abcdef1234567890abcdef12',
+		lastName: '',
+		categories: [],
+		opinions: []
 	},
 	{
-		id: 3,
+		id: '3',
 		name: 'Carpintería Madero Fino',
 		city: 'Cali',
 		stars: 5,
 		description:
-			'Fabricamos muebles a medida con maderas certificadas y diseños personalizados para hogares y oficinas.'
+			'Fabricamos muebles a medida con maderas certificadas y diseños personalizados para hogares y oficinas.',
+		address: '0x7890abcdef1234567890abcdef1234567890abcd',
+		lastName: '',
+		categories: [],
+		opinions: []
 	}
 ]
 
 export const opinions: Opinion[] = [
 	{
-		id: 1,
+		id: '1',
 		author: 'Walter H.',
 		date: '2025-04-15',
 		stars: 5,
@@ -335,34 +348,38 @@ export const opinions: Opinion[] = [
 			'Very professional, knows his craft, and pays great attention to detail. He quoted me for a dining set. Excellent.',
 		avatar:
 			'https://lh3.googleusercontent.com/a/ACg8ocJ6b2eSfGBTXWv8ZJr0iTzgQdW72ESTkZCNtOHK6wCUzwbV_dwbKg=s96-c',
-		verified: true
+		verified: true,
+		createdAt: ''
 	},
 	{
-		id: 2,
+		id: '2',
 		author: 'Sandra P.',
 		date: '2025-03-22',
 		stars: 4,
 		comment:
 			'They delivered on time and within budget. The electrical service was safe and well documented.',
-		verified: true
+		verified: true,
+		createdAt: ''
 	},
 	{
-		id: 3,
+		id: '3',
 		author: 'Luis F.',
 		date: '2025-04-02',
 		stars: 5,
 		comment:
 			'Impeccable furniture, excellent finish. I would definitely hire them again.',
-		avatar: 'https://dummyimage.com/96x96/ddd/aaa.jpg&text=L'
+		avatar: 'https://dummyimage.com/96x96/ddd/aaa.jpg&text=L',
+		createdAt: ''
 	},
 	{
-		id: 4,
+		id: '4',
 		author: 'Valentina R.',
 		date: '2025-01-18',
 		stars: 3,
 		comment:
 			'There was a delay in delivery, but the final work was acceptable.',
-		verified: false
+		verified: false,
+		createdAt: ''
 	}
 ]
 

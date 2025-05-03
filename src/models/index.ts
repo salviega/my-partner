@@ -16,6 +16,7 @@ export interface Category {
 
 export interface OpinionDto {
 	author: string
+	date?: string // ISO o string legible
 	createdAt: number // ISO o string legible
 	comment: string
 	avatar?: string // URL opcional
@@ -31,6 +32,7 @@ export interface Opinion {
 	avatar?: string // URL opcional
 	verified?: boolean
 	stars: number
+	date: string
 }
 
 export interface ProfessionalDto {
