@@ -1,8 +1,15 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
+// import Link from 'next/link'
 import Link from 'next/link'
-import { Player } from '@lottiefiles/react-lottie-player'
+
+const Player = dynamic(
+	() => import('@lottiefiles/react-lottie-player').then(mod => mod.Player),
+	{ ssr: false }
+)
+
 import { JSX, useRef, useState } from 'react'
 import ReactCardFlip from 'react-card-flip'
 
@@ -114,6 +121,7 @@ export default function Explore(): JSX.Element {
 											autoplay
 											loop
 											src={ANIMATIONS['sows-in-the-world']}
+											className="w-auto h-auto"
 										/>
 									</div>
 								)}
