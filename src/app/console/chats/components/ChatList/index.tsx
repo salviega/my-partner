@@ -28,7 +28,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 			return
 		}
 
-		socket = io('http://localhost:3000', {
+		socket = io('http://186.113.88.214:3000', {
 			query: { userID: currentUserId }
 		})
 
