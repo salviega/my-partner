@@ -40,8 +40,8 @@ export default function Root(): JSX.Element {
 			}
 
 			// Hardcoded address for testing
-			getUser(zeroAddress)
-			getProfessionalByAddress(zeroAddress)
+			// getUser(zeroAddress)
+			// getProfessionalByAddress(zeroAddress)
 
 			setCheckingMiniPay(false)
 		}

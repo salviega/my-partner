@@ -1,17 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 
+import { Stablecoin } from '@/models'
+
 import { useChatSocket } from '../../hooks/useSocket'
 
 interface ChatProps {
 	chatId: string
 	currentUserId: string
 	secondUserId: string
+	token?: Stablecoin
 }
 
 const ChatComponent: React.FC<ChatProps> = ({
 	chatId,
 	currentUserId,
-	secondUserId
+	secondUserId,
+	token
 }) => {
 	const { messages, sendMessage } = useChatSocket(
 		chatId,
@@ -23,6 +27,41 @@ const ChatComponent: React.FC<ChatProps> = ({
 
 	const scrollToBottom = (): void => {
 		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+	}
+
+	const onChangeNewMessage = (e: React.ChangeEvent<HTMLInputElement>): void => {
+		if (e.target.value.startsWith('/gen-pay')) {
+			const parts = e.target.value.split(' ')
+
+			// If they're just typing the command, use as is
+			if (parts.length === 1) {
+				setNewMessage(e.target.value)
+				return
+			}
+
+			// If they've entered an amount
+			const amount = parts[1]
+
+			if (!token) {
+				alert('No token available for payment generation')
+				setNewMessage(e.target.value)
+				return
+			}
+
+			// For backend: we send the full command with stringified token
+			const backendCommand = `/gen-pay ${amount} ${token.name}`
+
+			// For frontend display: we show a nicer format with token symbol
+			const displayCommand = `/gen-pay ${amount} ${token.name || 'token'}`
+
+			// Store the backend command but display the formatted version
+			setNewMessage(backendCommand)
+
+			// Optional: you might need to implement a custom display logic
+			// if you want to show a different format than what's stored
+		} else {
+			setNewMessage(e.target.value)
+		}
 	}
 
 	useEffect(() => {
@@ -52,8 +91,12 @@ const ChatComponent: React.FC<ChatProps> = ({
 					<input
 						type="text"
 						placeholder="Escribe un mensaje..."
-						value={newMessage}
-						onChange={e => setNewMessage(e.target.value)}
+						value={
+							newMessage.startsWith('/gen-pay') && token
+								? `/gen-pay ${newMessage.split(' ')[1]} ${token.name || 'token'}`
+								: newMessage
+						}
+						onChange={e => onChangeNewMessage(e)}
 						onKeyDown={e => {
 							if (e.key === 'Enter') {
 								sendMessage(newMessage)
