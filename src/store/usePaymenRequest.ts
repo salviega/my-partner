@@ -14,6 +14,7 @@ type PaymentRequestStore = {
 
 export const usePaymentRequestStore = create<PaymentRequestStore>(set => ({
 	paymentRequest: null,
-	setPaymentRequest: paymentRequest => set({ paymentRequest }),
-	clearPaymentRequest: () => set({ paymentRequest: null })
+	setPaymentRequest: (paymentRequest: PaymentRequest): void =>
+		set({ paymentRequest }),
+	clearPaymentRequest: (): void => set({ paymentRequest: null })
 }))
