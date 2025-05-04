@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { JSX, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { z } from 'zod'
 
 import StarRow from '@/app/home/componets/StartRow'
@@ -73,12 +73,6 @@ export default function Chat(): JSX.Element {
 	const [requestChat, setRequestChat] = useState<boolean>(false)
 	const [selectedToken, setSelectedToken] = useState<Stablecoin | null>(null)
 
-	// const [paymentRequest, setPaymentRequest] = useState<{
-	// 	amount: string
-	// 	currency: string
-	// 	requester: string
-	// } | null>(null)
-
 	const isSelected = (value: string): boolean => selectedCategory === value
 
 	const handleSelectCategory = (value: string): void => {
@@ -87,7 +81,7 @@ export default function Chat(): JSX.Element {
 	const socketReady =
 		requestChat && chatId && selectedProfessional?.address && user?.address
 
-	const { sendMessage, deleteChat, socket } = useChatSocket(
+	const { sendMessage, socket } = useChatSocket(
 		socketReady ? chatId : '',
 		socketReady ? selectedProfessional?.address : '',
 		socketReady ? user?.address : ''
@@ -145,13 +139,28 @@ export default function Chat(): JSX.Element {
 				toast.error('Could not connect to chat. Please try again.')
 			}, 5000) // Give it 5 seconds to connect
 
-			return () => clearTimeout(connectionTimeout)
+			return (): void => clearTimeout(connectionTimeout)
 		}
 	}, [requestChat, socket, chatId])
 
 	// You can also add this helper function somewhere in your component
-	const clearChatData = () => {
-		deleteChat()
+	const handleDeleteChat = () => {
+		// const chatId = `${selectedProfessional?.address}-${user?.address}`
+		// if (!chatId) {
+		// 	toast.error('No chat ID found in localStorage')
+		// 	return
+		// }
+		// deleteChatService(chatId as string)
+		// 	.then(() => {
+		// 		toast.success('Chat deleted successfully')
+		// 		localStorage.removeItem('chatId')
+		// 		setChatId('')
+		// 		setRequestChat(false)
+		// 	})
+		// 	.catch(error => {
+		// 		toast.error('Error deleting chat')
+		// 		// Handle error if needed
+		// 	})
 		// localStorage.removeItem('chatId')
 		// setChatId('')
 		// setRequestChat(false)
@@ -164,13 +173,13 @@ export default function Chat(): JSX.Element {
 	}, [id, selectedProfessional, getSelectedProfessionalById])
 
 	//use effect para verificar si el chatId existe en el localStorage
-	useEffect(() => {
-		const storedChatId = localStorage.getItem('chatId')
-		if (storedChatId) {
-			setChatId(storedChatId)
-			setRequestChat(true)
-		}
-	}, [])
+	// useEffect(() => {
+	// 	const storedChatId = localStorage.getItem('chatId')
+	// 	if (storedChatId) {
+	// 		setChatId(storedChatId)
+	// 		setRequestChat(true)
+	// 	}
+	// }, [])
 	// alert(`user address${user?.address}`)
 	// alert(`professional address${professional?.address}`)
 
@@ -249,9 +258,9 @@ export default function Chat(): JSX.Element {
 			</div>
 		)
 
-	const handleSelectToken = (token: Stablecoin): void => {
-		setSelectedToken(token)
-	}
+	// const handleSelectToken = (token: Stablecoin): void => {
+	// 	setSelectedToken(token)
+	// }
 
 	// if (!isSettingUser && !user) return <Announcement />
 
@@ -271,36 +280,42 @@ export default function Chat(): JSX.Element {
 						{/* Profesional info */}
 
 						{selectedProfessional && (
-							<div className="flex flex-col items-center space-y-4 w-full">
+							<div className="flex flex-col items-center space-y-5 w-full bg-orange-50 p-6 rounded-xl">
 								<h2 className="text-xl font-semibold text-orange-500">
 									Professional information
 								</h2>
-								<div className="flex items-center space-x-12 text-gray-300">
-									<Image
-										src={
-											selectedProfessional.photoUrl
-												? selectedProfessional.photoUrl
-												: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
-										}
-										alt={selectedProfessional.name}
-										width={250}
-										height={250}
-										className="rounded-full object-cover"
-									/>
+								<div className="flex flex-col md:flex-row items-center md:items-start gap-8 w-full">
+									<div className="avatar">
+										<div className="w-32 md:w-40 h-32 md:h-40 rounded-full ring ring-orange-200 ring-offset-2 shadow-md overflow-hidden">
+											<Image
+												src={
+													selectedProfessional.photoUrl
+														? selectedProfessional.photoUrl
+														: `https://dummyimage.com/200x200/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
+												}
+												alt={selectedProfessional.name}
+												width={200}
+												height={200}
+												className="object-cover w-full h-full"
+											/>
+										</div>
+									</div>
 									<div className="flex flex-col space-y-3 w-full">
-										<div className="flex items-center space-x-3">
-											<h3 className="text-xl font-semibold">
+										<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+											<h3 className="text-xl font-semibold text-center md:text-left">
 												{selectedProfessional.name}{' '}
 												{selectedProfessional.lastName}
 											</h3>
-											<StarRow stars={selectedProfessional.stars} />
+											<div className="w-full flex justify-center items-center">
+												<StarRow stars={selectedProfessional.stars} />
+											</div>
 										</div>
-										<p className="text-gray-700">
+										<p className="text-gray-700 text-sm md:text-base text-center md:text-left">
 											{selectedProfessional.description}
 										</p>
 									</div>
 								</div>
-								<h2 className="text-lg font-semibold text-orange-500">
+								<h2 className="text-lg font-semibold text-orange-500 pt-2 border-t border-orange-200 w-full text-center md:text-left">
 									About the project
 								</h2>
 							</div>
@@ -394,23 +409,23 @@ export default function Chat(): JSX.Element {
 						</button>
 					</form>
 				)}
+				{requestChat && (
+					<div className="flex-1 h-auto border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md">
+						<div className="flex justify-between items-center mb-4 w-full">
+							<h2 className="text-xl font-semibold text-orange-500">
+								Chat with Professional
+							</h2>
+							<a href="https://app.mento.org/" target="_blank" rel="noreferrer">
+								<Image
+									src={IMAGES['mentoLogo']}
+									alt="Mento"
+									width={50}
+									height={50}
+								/>
+							</a>
+						</div>
 
-				<div className="flex-1 h-auto border-2 border-gray-200 bg-white p-6 rounded-2xl shadow-md">
-					<div className="flex justify-between items-center mb-4 w-full">
-						<h2 className="text-xl font-semibold text-orange-500">
-							Chat with Professional
-						</h2>
-						<a href="https://app.mento.org/" target="_blank" rel="noreferrer">
-							<Image
-								src={IMAGES['mentoLogo']}
-								alt="Mento"
-								width={50}
-								height={50}
-							/>
-						</a>
-					</div>
-
-					{/* <div className="dropdown dropdown-bottom">
+						{/* <div className="dropdown dropdown-bottom">
 						<div tabIndex={0} role="button" className="btn flex items-center">
 							{selectedToken ? (
 								<>
@@ -453,71 +468,76 @@ export default function Chat(): JSX.Element {
 							})}
 						</ul>
 					</div> */}
-					<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
-						{isSubmitting ? (
-							<div className="flex items-center justify-center h-full">
-								<span className="loading loading-spinner loading-lg text-orange-500"></span>
-							</div>
-						) : (
-							<>
-								{!requestChat ? (
-									<h2 className="text-lg font-semibold text-gray-500 mb-4">
-										First request a service to start a chat with the
-										professional
-									</h2>
-								) : (
-									<>
-										<ChatComponent
-											chatId={
-												chatId ||
-												`${selectedProfessional?.address}-${user?.address}`
-											}
-											currentUserId={selectedProfessional?.address as string}
-											secondUserId={user?.address as string}
-										/>
-										{paymentRequest && (
-											<div className="mt-4 bg-white p-4 rounded-2xl shadow-2xl border broder-gray-200">
-												<h2 className="text-lg font-semibold text-orange-500 mb-2">
-													Payment Request
-												</h2>
-												<p className="text-gray-700 mb-3">
-													<span className="font-medium">
-														{paymentRequest.requester}
-													</span>{' '}
-													is requesting a payment of{' '}
-													<span className="font-medium">
-														{paymentRequest.amount} {paymentRequest.currency}
-													</span>
-												</p>
-												<div className="flex justify-end gap-3">
-													<button
-														className="btn btn-sm border-gray-300 hover:bg-gray-100"
-														onClick={() => clearPaymentRequest()}
-													>
-														Decline
-													</button>
-													{selectedProfessional && selectedToken && (
-														<Modal
-															amount={
-																paymentRequest?.amount.toString() as string
-															}
-															selectedStablecoin={selectedToken}
-															selectedProfessional={selectedProfessional}
-														/>
-													)}
-												</div>
-											</div>
-										)}
+						<div className="w-full h-[calc(100%-2rem)] overflow-hidden">
+							{isSubmitting ? (
+								<div className="flex items-center justify-center h-full">
+									<span className="loading loading-spinner loading-lg text-orange-500"></span>
+								</div>
+							) : (
+								<>
+									{!requestChat ? (
+										<h2 className="text-lg font-semibold text-gray-500 mb-4">
+											First request a service to start a chat with the
+											professional
+										</h2>
+									) : (
+										<>
+											<ChatComponent
+												chatId={
+													chatId ||
+													`${selectedProfessional?.address}-${user?.address}`
+												}
+												currentUserId={user?.address as string}
+												secondUserId={selectedProfessional?.address as string}
+											/>
 
-										{/* <button onClick={clearChatData} className="btn btn-sm mt-4">
-											Cancel Chat
-										</button> */}
-									</>
-								)}
-							</>
-						)}
+											{paymentRequest && (
+												<div className="mt-4 bg-white p-3 sm:p-4 rounded-2xl shadow-2xl border border-gray-200">
+													<h2 className="text-lg font-semibold text-orange-500 mb-2">
+														Payment Request
+													</h2>
+													<p className="text-sm sm:text-base text-gray-700 mb-3">
+														<span className="font-medium">
+															{paymentRequest.requester}
+														</span>{' '}
+														is requesting a payment of{' '}
+														<span className="font-medium">
+															{paymentRequest.amount} {paymentRequest.currency}
+														</span>
+													</p>
+													<div className="flex flex-col xs:flex-row justify-end gap-2 sm:gap-3">
+														<button
+															className="btn btn-sm border-gray-300 hover:bg-gray-100 w-full xs:w-auto"
+															onClick={() => clearPaymentRequest()}
+														>
+															Decline
+														</button>
+														{selectedProfessional && selectedToken && (
+															<Modal
+																amount={
+																	paymentRequest?.amount.toString() as string
+																}
+																selectedStablecoin={selectedToken}
+																selectedProfessional={selectedProfessional}
+															/>
+														)}
+													</div>
+												</div>
+											)}
+
+											{/* <button
+												onClick={handleDeleteChat}
+												className="btn btn-sm btn-secondary mt-4"
+											>
+												Cancel Chat
+											</button> */}
+										</>
+									)}
+								</>
+							)}
+						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</Layout>
 	)
