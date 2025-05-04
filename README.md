@@ -4,7 +4,7 @@ Global Stablecoin Hackathon
 
 ### Website
 
-xxx
+https://my-partner-phi.vercel.app
 
 ### My Partner - websocket:
 
@@ -35,7 +35,5 @@ bun run dev
 ## Authors 🏗
 
 [LeroRami99](https://github.com/LeoRami99)
-
-[rookiecol](https://github.com/rookiecol)
 
 [salviega](https://github.com/salviega)
