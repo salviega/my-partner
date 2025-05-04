@@ -41,6 +41,12 @@ export default function Chats(): JSX.Element {
 	const [secondUserId, setSecondUserId] = useState<string>('')
 
 	useEffect(() => {
+		if (user?.address) {
+			setCurrentUserId(user.address)
+		}
+	}, [user?.address])
+
+	useEffect(() => {
 		async function checkMiniPay(): Promise<void> {
 			if (typeof window !== 'undefined' && window.ethereum?.isMiniPay) {
 				if (!user) {
@@ -102,32 +108,33 @@ export default function Chats(): JSX.Element {
 	return (
 		<div className="flex flex-col h-[calc(100vh-4rem)]">
 			{/* Header with user setup */}
-			<div className=" p-4 shadow-md bg-white rounded-2xl">
+			<div className="p-4 shadow-md bg-white rounded-2xl">
 				<h1 className="text-2xl font-bold flex items-center">
 					<span className="text-primary mr-2">💬</span>
 					Chat Application
+					{user?.address && (
+						<span className="text-sm text-gray-500 ml-2">
+							{`(${user?.address.slice(0, 6)}...${user?.address.slice(-4)})`}
+						</span>
+					)}
 				</h1>
-				{/* <div className="flex flex-wrap gap-2 mt-3">
-					<input
-						type="text"
-						onChange={e => setCurrentUserId(e.target.value)}
-						value={currentUserId}
-						defaultValue={user?.address}
-						placeholder="Your user ID"
-						className="input input-sm input-bordered flex-1 min-w-[200px]"
-					/>
-				</div> */}
+				{!user?.address && (
+					<div className="mt-3 p-2 bg-yellow-50 rounded-lg text-amber-700 text-sm">
+						Waiting for user address...
+					</div>
+				)}
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-10 flex-1 mt-4">
-				<ChatListComponent
-					currentUserId={user?.address || ''}
-					onSelectChat={(chatId, secondUserId) => {
-						setCurrentChatId(chatId)
-						setSecondUserId(secondUserId)
-					}}
-				/>
-
+				{user?.address && (
+					<ChatListComponent
+						currentUserId={user.address}
+						onSelectChat={(chatId, secondUserId) => {
+							setCurrentChatId(chatId)
+							setSecondUserId(secondUserId)
+						}}
+					/>
+				)}
 				<div className="bg-white shadow-md rounded-2xl p-4 flex-1">
 					<>
 						<div className="dropdown dropdown-bottom">
