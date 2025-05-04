@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { JSX, useEffect, useState } from 'react'
+import { JSX, use, useEffect, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 
 import { stablecoins } from '@/constants'
@@ -107,20 +107,21 @@ export default function Chats(): JSX.Element {
 					<span className="text-primary mr-2">💬</span>
 					Chat Application
 				</h1>
-				<div className="flex flex-wrap gap-2 mt-3">
+				{/* <div className="flex flex-wrap gap-2 mt-3">
 					<input
 						type="text"
 						onChange={e => setCurrentUserId(e.target.value)}
 						value={currentUserId}
+						defaultValue={user?.address}
 						placeholder="Your user ID"
 						className="input input-sm input-bordered flex-1 min-w-[200px]"
 					/>
-				</div>
+				</div> */}
 			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-2 gap-10 flex-1 mt-4">
 				<ChatListComponent
-					currentUserId={currentUserId}
+					currentUserId={user?.address || ''}
 					onSelectChat={(chatId, secondUserId) => {
 						setCurrentChatId(chatId)
 						setSecondUserId(secondUserId)
