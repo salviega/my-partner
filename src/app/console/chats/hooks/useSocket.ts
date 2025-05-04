@@ -31,19 +31,16 @@ export function useChatSocket(
 			return
 		}
 
-		const socketInstance = io(
-			'https://hopes-kai-databases-graduation.trycloudflare.com/',
-			{
-				extraHeaders: {
-					'ngrok-skip-browser-warning': 'true'
-				},
-				query: {
-					chatID: chatId,
-					userID: currentUserId,
-					secondIdUser: secondUserId
-				}
+		const socketInstance = io(process.env.SOCKET_URL as string, {
+			extraHeaders: {
+				'ngrok-skip-browser-warning': 'true'
+			},
+			query: {
+				chatID: chatId,
+				userID: currentUserId,
+				secondIdUser: secondUserId
 			}
-		)
+		})
 
 		setSocket(socketInstance)
 
