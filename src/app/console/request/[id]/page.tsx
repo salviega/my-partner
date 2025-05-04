@@ -262,7 +262,7 @@ export default function Chat(): JSX.Element {
 	// 	setSelectedToken(token)
 	// }
 
-	// if (!isSettingUser && !user) return <Announcement />
+	if (!isSettingUser && !user) return <Announcement />
 
 	if (!isSettingSelectedProfessional && !selectedProfessional)
 		return <Announcement message="My partner isn't already mine" />

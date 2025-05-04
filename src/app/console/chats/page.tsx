@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { JSX, use, useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 
 import { stablecoins } from '@/constants'
@@ -100,7 +100,7 @@ export default function Chats(): JSX.Element {
 		// }
 	}
 
-	// if (!isSettingUser && !user) return <Announcement />
+	if (!isSettingUser && !user) return <Announcement />
 
 	if (!isSettingProfessional && !professional)
 		return <Announcement message="Aren't a partner" />

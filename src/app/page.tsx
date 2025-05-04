@@ -1,7 +1,7 @@
 'use client'
 
 import { JSX, useEffect, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 
 import Spinner from '@/shared/Spinner'
 import { useStore } from '@/store'
