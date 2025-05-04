@@ -141,17 +141,19 @@ export default function Modal(props: Props): JSX.Element {
 						<h3 className="text-2xl font-semibold">
 							{selectedProfessional.name} {selectedProfessional.lastName}
 						</h3>
-						<Image
-							src={
-								selectedProfessional.photoUrl
-									? selectedProfessional.photoUrl
-									: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
-							}
-							alt={selectedProfessional.name}
-							width={250}
-							height={250}
-							className="rounded-full object-cover"
-						/>
+						<div className="avatar size-[180px]  rounded-full">
+							<Image
+								src={
+									selectedProfessional.photoUrl
+										? selectedProfessional.photoUrl
+										: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
+								}
+								alt={selectedProfessional.name}
+								width={180}
+								height={180}
+								className="rounded-full object-cover"
+							/>
+						</div>
 
 						{/* Form */}
 						<form
