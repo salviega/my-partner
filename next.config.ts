@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
 			'external-content.duckduckgo.com', // ← el host del error
 			'media.licdn.com'
 		]
+	},
+	env: {
+		SOCKET_URL: process.env.SOCKET_URL
 	}
 }
 
