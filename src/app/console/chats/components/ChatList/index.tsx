@@ -28,7 +28,7 @@ const ChatListComponent: React.FC<ChatListProps> = ({
 			return
 		}
 
-		socket = io('https://hopes-kai-databases-graduation.trycloudflare.com', {
+		socket = io(process.env.SOCKET_URL as string, {
 			query: { userID: currentUserId }
 		})
 
