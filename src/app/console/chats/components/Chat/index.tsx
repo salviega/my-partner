@@ -30,7 +30,7 @@ const ChatComponent: React.FC<ChatProps> = ({
 	}
 
 	const onChangeNewMessage = (e: React.ChangeEvent<HTMLInputElement>): void => {
-		if (e.target.value.startsWith('/gen-pay')) {
+		if (e.target.value.startsWith('/genpay')) {
 			const parts = e.target.value.split(' ')
 
 			// If they're just typing the command, use as is
@@ -49,10 +49,10 @@ const ChatComponent: React.FC<ChatProps> = ({
 			}
 
 			// For backend: we send the full command with stringified token
-			const backendCommand = `/gen-pay ${amount} ${token.name}`
+			const backendCommand = `/genpay ${amount} ${token.name}`
 
-			// For frontend display: we show a nicer format with token symbol
-			const displayCommand = `/gen-pay ${amount} ${token.name || 'token'}`
+			// // For frontend display: we show a nicer format with token symbol
+			// const displayCommand = `/gen-pay ${amount} ${token.name || 'token'}`
 
 			// Store the backend command but display the formatted version
 			setNewMessage(backendCommand)
@@ -92,8 +92,8 @@ const ChatComponent: React.FC<ChatProps> = ({
 						type="text"
 						placeholder="Escribe un mensaje..."
 						value={
-							newMessage.startsWith('/gen-pay') && token
-								? `/gen-pay ${newMessage.split(' ')[1]} ${token.name || 'token'}`
+							newMessage.startsWith('/genpay') && token
+								? `/genpay ${newMessage.split(' ')[1]} ${token.name || 'token'}`
 								: newMessage
 						}
 						onChange={e => onChangeNewMessage(e)}
