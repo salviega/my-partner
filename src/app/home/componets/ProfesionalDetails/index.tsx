@@ -34,17 +34,19 @@ export default function ProfessionalDetails(props: Props): JSX.Element {
 		<div className="flex flex-col items-center space-y-8 p-6 w-full sm:h-96 overflow-y-auto">
 			{/* Bio */}
 			<div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-x-12 text-gray-300">
-				<Image
-					src={
-						selectedProfessional.photoUrl
-							? selectedProfessional.photoUrl
-							: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
-					}
-					alt={selectedProfessional.name}
-					width={250}
-					height={250}
-					className="rounded-full object-cover"
-				/>
+				<div className="w-64 h-64 sm:w-full sm:h-full rounded-full overflow-hidden">
+					<Image
+						src={
+							selectedProfessional.photoUrl
+								? selectedProfessional.photoUrl
+								: `https://dummyimage.com/80x80/eee/aaa.jpg&text=${selectedProfessional.name.charAt(0).toUpperCase()}`
+						}
+						alt={selectedProfessional.name}
+						width={250}
+						height={250}
+						className="object-cover"
+					/>
+				</div>
 
 				<div className="flex flex-col items-center space-y-3 w-full">
 					<div className="flex flex-col sm:flex-row items-center sm:space-x-3">

@@ -5,6 +5,7 @@ import {
 	custom,
 	EIP1193Provider,
 	http,
+	parseEther,
 	TransactionReceipt
 } from 'viem'
 import { celo } from 'viem/chains'
@@ -34,12 +35,14 @@ export async function sendToken(
 	const [account] = await walletClient.getAddresses()
 	if (!account) throw new Error('Wallet not connected')
 
+	const amountInWei = parseEther(amount)
+
 	/* 1️⃣  Estimas el gas para la llamada transfer() */
 	const gasLimit = await publicClient.estimateContractGas({
 		address: stableToken.proxy,
 		abi: ERC20_ABI,
 		functionName: 'transfer',
-		args: [to, amount],
+		args: [to, amountInWei],
 		account
 	})
 
@@ -48,7 +51,7 @@ export async function sendToken(
 		address: stableToken.proxy,
 		abi: ERC20_ABI,
 		functionName: 'transfer',
-		args: [to, amount],
+		args: [to, amountInWei],
 		account,
 		gas: gasLimit, // ← gas limit ya calculado
 		feeCurrency: stableToken.proxy
