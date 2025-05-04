@@ -1,6 +1,6 @@
 import { JSX } from 'react'
 
-import Footer from '@/shared/Footer'
+// import Footer from '@/shared/Footer'
 import Navbar from '@/shared/Navbar'
 
 export default function Layout({
@@ -16,7 +16,7 @@ export default function Layout({
 					{children}
 				</div>
 			</main>
-			<Footer />
+			{/* <Footer /> */}
 		</>
 	)
 }
